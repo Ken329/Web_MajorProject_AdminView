@@ -20,7 +20,7 @@ function Login() {
         .then((res) => {
           alert(res.data.data.message)
           if(res.data.data.success){
-            history.push("Admin");
+            history.push(`/Admin?uid=${res.data.data.id}`);
           }
         })
       }

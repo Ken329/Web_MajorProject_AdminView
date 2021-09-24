@@ -28,9 +28,12 @@ function classNames(...classes) {
 }
 
 function AdminPage() {
+    const [userId, setuserId] = useState("");
+
     useEffect( () => {
-        Axios.get("https://eatsy-0329.herokuapp.com/getUser")
-        .then((res) => console.log(res.data))
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        setuserId(urlParams.get("uid"));
     }, [] )
 
     return (
