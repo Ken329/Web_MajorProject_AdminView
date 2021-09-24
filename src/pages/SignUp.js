@@ -92,7 +92,7 @@ function SignUp() {
               var city = document.getElementById('personal').elements["city"].value;
               var postalCode = document.getElementById('personal').elements["postal-code"].value;
 
-              Axios.post('http://localhost:4000/addAdmin', {
+              Axios.post('https://eatsy-0329.herokuapp.com/addAdmin', {
                 email: email,
                 password: password,
                 restaurant: name,

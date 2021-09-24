@@ -29,7 +29,7 @@ function classNames(...classes) {
 
 function AdminPage() {
     useEffect( () => {
-        Axios.get("http://localhost:4000/getUser")
+        Axios.get("https://eatsy-0329.herokuapp.com/getUser")
         .then((res) => console.log(res.data))
     }, [] )
 
