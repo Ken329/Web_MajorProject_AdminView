@@ -7,7 +7,7 @@ function Footer() {
         history.push("/");
     }
     return (
-        <footer className="flex justify-center items-center fixed bottom-0 w-full">
+        <footer className="flex justify-center items-center fixed bottom-0 w-full bg-gray-50">
             <a 
                 href="Product" 
                 className="
@@ -39,7 +39,7 @@ function Footer() {
             <img 
                 onClick={e => homePage(e)} 
                 className="w-8 h-8 my-4 mx-10 cursor-pointer" 
-                src="../img/logo.jpeg"/>
+                src="../img/logo2.png"/>
             <a 
                 href="AboutUs" 
                 className="

@@ -40,11 +40,11 @@ function Welcome() {
                         <img
                           onClick={e => homePage(e)}
                           className="h-8 w-auto sm:h-10"
-                          src="../img/logo.jpeg"
+                          src="../img/logo2.png"
                         />
                       </a>
                       <div className="-mr-2 flex items-center md:hidden">
-                        <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500">
+                        <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
                           <span className="sr-only">Open main menu</span>
                           <MenuIcon className="h-6 w-6" aria-hidden="true" />
                         </Popover.Button>
@@ -57,7 +57,7 @@ function Welcome() {
                         {item.name}
                       </a>
                     ))}
-                    <a href="Login" className="font-medium text-green-600 hover:text-green-500">
+                    <a href="Login" className="font-medium text-indigo-600 hover:text-indigo-500">
                       Log in
                     </a>
                   </div>
@@ -82,12 +82,12 @@ function Welcome() {
                       <div>
                         <img
                           className="h-8 w-auto"
-                          src="../img/logo.jpeg"
+                          src="../img/logo2.png"
                           alt=""
                         />
                       </div>
                       <div className="-mr-2">
-                        <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500">
+                        <Popover.Button className="bg-white rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500">
                           <span className="sr-only">Close main menu</span>
                           <XIcon className="h-6 w-6" aria-hidden="true" />
                         </Popover.Button>
@@ -106,7 +106,7 @@ function Welcome() {
                     </div>
                     <a
                       href="Login"
-                      className="block w-full px-5 py-3 text-center font-medium text-green-600 bg-gray-50 hover:bg-gray-100"
+                      className="block w-full px-5 py-3 text-center font-medium text-indigo-600 bg-gray-50 hover:bg-gray-100"
                     >
                       Log in
                     </a>
@@ -119,7 +119,7 @@ function Welcome() {
               <div className="sm:text-center lg:text-left">
                 <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
                   <span className="block xl:inline">Technology to enrich your</span>{' '}
-                  <span className="block text-green-600 xl:inline">food ordering system</span>
+                  <span className="block text-indigo-600 xl:inline">food ordering system</span>
                 </h1>
                 <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
                   I don't believe in ordering people to do things. You have to sort of grab an oar and row with them. Starting by 
@@ -129,7 +129,7 @@ function Welcome() {
                   <div className="rounded-md shadow">
                     <a
                       href="SignUp"
-                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 md:py-4 md:text-lg md:px-10"
+                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
                     >
                       Get started
                     </a>
@@ -137,7 +137,7 @@ function Welcome() {
                   <div className="mt-3 sm:mt-0 sm:ml-3">
                     <a
                       href="SignUp"
-                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-green-700 bg-green-100 hover:bg-green-200 md:py-4 md:text-lg md:px-10"
+                      className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 md:py-4 md:text-lg md:px-10"
                     >
                       Sign up now
                     </a>
