@@ -7,7 +7,7 @@ function Footer() {
         history.push("/");
     }
     return (
-        <footer className="flex justify-center items-center fixed bottom-0 w-full bg-gray-50">
+        <footer className="flex justify-center items-center fixed bottom-0 w-full bg-gray-50 z-20">
             <a 
                 href="Product" 
                 className="

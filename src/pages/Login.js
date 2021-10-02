@@ -48,7 +48,7 @@ function Login() {
         <div>
           <img
             className="mx-auto h-12 w-auto"
-            src="../img/logo.jpeg"
+            src="../img/logo2.png"
             alt="Workflow"
           />
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
