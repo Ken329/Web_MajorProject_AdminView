@@ -5,6 +5,9 @@ import Header from '../components/Header'
 import { MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/outline'
 import { PlusCircle } from 'heroicons-react';
 import { ClimbingBoxLoader } from 'react-spinners';
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
 
 function getUserIcon(gender){
     switch(gender){
@@ -31,6 +34,7 @@ function AdminPage() {
 
     // cart
     const [cart, setCart] = useState([]);
+    const [total, setTotal] = useState(0.00);
     
     // useEffect( () => {
     //     const interval = setInterval(() => {
@@ -103,10 +107,30 @@ function AdminPage() {
     function addToCart(id, detail){
         var data = {};
         var price = detail.food_price;
+
+        // when item exist in cart
+        var index = cart.findIndex(x => x.id === id);
+        if(index >= 0){
+            let arr = [...cart];
+            arr[index] = {
+                id: arr[index].id,
+                price: (parseFloat(arr[index].singlePrice) * (parseInt(arr[index].quantity) + 1)).toFixed(2),
+                singlePrice: arr[index].singlePrice,
+                quantity: parseInt(arr[index].quantity) + 1,
+                image: arr[index].image,
+                name: arr[index].name
+            }
+            setCart(arr);
+            calculateTotalPrice(arr[index].singlePrice, "plus");
+            return;
+        }
+        
+        // when item has discount code
         if(detail.food_discount === "yes"){
             var newPrice = parseFloat(detail.food_price) - 2;
             price = newPrice.toFixed(2);
         }
+        // when item doesnt exist in cart
         data = {
             id: id,
             quantity: 1,
@@ -115,51 +139,78 @@ function AdminPage() {
             image: detail.food_image,
             name: detail.food_name
         }
-        var index = cart.findIndex(x => x.id === id);
-        if(index >= 0){
-            let arr = [...cart];
+        setCart(array => [...array, data]);
+        calculateTotalPrice(price, "plus");
+    }
+    function alteringCart(index, action){
+        let arr = [...cart];
+        if(action === "minus"){
+            arr[index] = {
+                id: arr[index].id,
+                price: (parseFloat(arr[index].singlePrice) * (parseInt(arr[index].quantity) - 1)).toFixed(2),
+                singlePrice: arr[index].singlePrice,
+                quantity: parseInt(arr[index].quantity) - 1,
+                image: arr[index].image,
+                name: arr[index].name
+            }
+            if(arr[index].quantity <= 0){
+                arr.splice(index, 1); 
+            }
+            calculateTotalPrice(arr[index].singlePrice, "minus")
+            setCart(arr);
+        }else{
             arr[index] = {
                 id: arr[index].id,
                 price: (parseFloat(arr[index].singlePrice) * (parseInt(arr[index].quantity) + 1)).toFixed(2),
+                singlePrice: arr[index].singlePrice,
                 quantity: parseInt(arr[index].quantity) + 1,
                 image: arr[index].image,
                 name: arr[index].name
             }
+            calculateTotalPrice(arr[index].singlePrice, "plus")
             setCart(arr);
-            return;
         }
-        setCart(array => [...array, data]);
-        
     }
     
+    // calculating total price 
+    function calculateTotalPrice(price, action){
+        if(action === 'minus'){
+            setTotal((parseFloat(total) - parseFloat(price)).toFixed(2))
+            return;
+        }
+        setTotal((parseFloat(total) + parseFloat(price)).toFixed(2))
+    }
+
     useEffect( () => {
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        const id = urlParams.get("uid");
+        const id = cookies.get("user_id")
         
-        Axios.post("https://eatsy-0329.herokuapp.com/getUser", {
-            uid: id
-        })
-        .then( (res) => {
-            if(!res.data.success){
-                alert("Something wrong with your site, try login again");
-                history.push('/Login');
-            }else{
-                setUserDetail(res.data.data[0]);
-                Axios.post("https://eatsy-0329.herokuapp.com/getRestaurantMenuById", {
-                    id: id
-                })
-                .then( (res) => {
-                    const data = res.data.data;
-                    for(var i = 1; i < data.length; i+=2){
-                        setUserMenu(array => [...array, data[i + 1]])
-                        setMenuId(array => [...array, data[i]])
-                        setMenuCategories(array => [...array, data[i + 1].food_categories])
-                    }
-                    setLoading(false);
-                })
-            }
-        })
+        if(id !== undefined){
+            Axios.post("https://eatsy-0329.herokuapp.com/getUser", {
+                uid: id
+            })
+            .then( (res) => {
+                if(!res.data.success){
+                    alert("Something wrong with your site, try login again");
+                    history.push('/Login');
+                }else{
+                    setUserDetail(res.data.data[0]);
+                    Axios.post("https://eatsy-0329.herokuapp.com/getRestaurantMenuById", {
+                        id: id
+                    })
+                    .then( (res) => {
+                        const data = res.data.data;
+                        for(var i = 1; i < data.length; i+=2){
+                            setUserMenu(array => [...array, data[i + 1]])
+                            setMenuId(array => [...array, data[i]])
+                            setMenuCategories(array => [...array, data[i + 1].food_categories])
+                        }
+                        setLoading(false);
+                    })
+                }
+            })
+        }else{
+            history.push("/");
+        }
     }, [] ) 
     return (
         <div className="min-h-screen w-full bg-gray-100">
@@ -180,7 +231,45 @@ function AdminPage() {
                         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
                         </div>
                     </header>
-                    <main className="flex">
+                    <main className="flex relative overflow-hidden">
+                        <div className="absolute left-1/3 flex">
+                            <div className="cursor-pointer flex-col shadow-lg ml-3 px-3 
+                            py-2 rounded-b-lg relative -top-14 hover:top-0 hover:z-10 hover:bg-gray-100">
+                                <h5 className="w-full text-center">Track Order</h5>
+                                <div className="flex">
+                                    <div className="mx-2 flex-col">
+                                        <p className="w-full text-center">0</p>
+                                        <p>Pending</p>
+                                    </div>
+                                    <div className="flex-col mx-2">
+                                        <p className="w-full text-center">0</p>
+                                        <p>Working</p>
+                                    </div>
+                                    <div className="flex-col mx-2">
+                                        <p className="w-full text-center">0</p>
+                                        <p>Done</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="cursor-pointer flex-col shadow-lg ml-3 px-3 
+                            py-2 rounded-b-lg relative -top-14 hover:top-0 hover:z-10 hover:bg-gray-100">
+                                <h5 className="w-full text-center">Book Table</h5>
+                                <div className="flex">
+                                    <div className="mx-2 flex-col">
+                                        <p className="w-full text-center">0</p>
+                                        <p>Pending</p>
+                                    </div>
+                                    <div className="flex-col mx-2">
+                                        <p className="w-full text-center">0</p>
+                                        <p>Working</p>
+                                    </div>
+                                    <div className="flex-col mx-2">
+                                        <p className="w-full text-center">0</p>
+                                        <p>Done</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div className="max-w-6xl w-3/4 flex-col py-6 sm:px-6 lg:px-8">
                             <div className="w-full py-4 flex flex-wrap">
                                 {  insertCategories(menuCategories) }
@@ -218,19 +307,6 @@ function AdminPage() {
                                                 </div>
                                     })
                                 }
-                                {/* <div 
-                                    className={"bg-white h-auto flex-col rounded-lg relative m-5"}>
-                                        <img className="w-full h-3/5 rounded-t-lg" src='../img/background.jpg' />
-                                        <p className="m-2">Chicken Chop</p>
-                                        <p className="m-2">RM 12.00</p>
-                                        <div className="bg-red-600 w-auto absolute top-2 right-2 rounded-lg px-2 opacity-80">
-                                            - $2 Off
-                                        </div>
-                                        <div className="w-full h-full absolute opacity-50 bg-gray-100 z-10 flex justify-center items-center">
-                                            Not Available
-                                        </div>
-                                        <PlusCircle className="w-6 h-6 cursor-pointer absolute bottom-2 right-2"/>
-                                </div> */}
                             </div>
                         </div>
                         <div className="bg-white w-1/4 h-full m-3 rounded-md">
@@ -243,16 +319,20 @@ function AdminPage() {
                                     cart.length === 0 ? (
                                         <p className="w-full text-center my-3">Empty Cart</p>
                                     ) : (
-                                        cart.map((data) => {
+                                        cart.map((data, index) => {
                                             return <div key={data.name} className="flex my-2 items-center">
                                                         <img className="rounded-full w-12 h-12" src={data.image}/>
                                                         <div className="flex-col w-4/5">
                                                             <p className="text-center my-2">{data.name}</p>
                                                             <div className="grid grid-cols-1 my-2 lg:grid-cols-2 ">
                                                                 <div className="flex justify-center items-center">
-                                                                    <PlusCircleIcon className="w-5 h-5 mx-2 cursor-pointer"/>
+                                                                    <MinusCircleIcon 
+                                                                        onClick={e => alteringCart(index,  "minus")}
+                                                                        className="w-5 h-5 mx-2 cursor-pointer"/>
                                                                     <p>{data.quantity}</p>
-                                                                    <MinusCircleIcon className="w-5 h-5 mx-2 cursor-pointer"/>
+                                                                    <PlusCircleIcon 
+                                                                        onClick={e => alteringCart(index,  "plus")}
+                                                                        className="w-5 h-5 mx-2 cursor-pointer"/>
                                                                 </div>
                                                                 <p className="text-center">RM {data.price}</p>
                                                             </div>
@@ -261,25 +341,10 @@ function AdminPage() {
                                         })
                                     )
                                 }
-                                
-                                {/* <div className="flex my-2 items-center">
-                                    <img className="rounded-full w-12 h-12" src="../img/background.jpg"/>
-                                    <div className="flex-col w-full">
-                                        <p className="text-center my-2">Chicken Chop</p>
-                                        <div className="grid grid-cols-1 my-2 lg:grid-cols-2 ">
-                                            <div className="flex justify-center items-center">
-                                                <PlusCircleIcon className="w-5 h-5 mx-2 cursor-pointer"/>
-                                                <p>0</p>
-                                                <MinusCircleIcon className="w-5 h-5 mx-2 cursor-pointer"/>
-                                            </div>
-                                            <p className="text-center">RM 12.00</p>
-                                        </div>
-                                    </div>
-                                </div> */}
                                 <div className="w-full flex-col">
-                                    <p className="text-right px-2">Total: </p>
-                                    <p className="text-right px-2">SST: </p>
-                                    <p className="text-right px-2">Total + SST: </p>
+                                    <p className="text-right px-2">Total: RM{total}</p>
+                                    <p className="text-right px-2">SST 6%: RM{(parseFloat(total) * 0.06).toFixed(2)}</p>
+                                    <p className="text-right px-2">Total + SST: RM{(parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2)}</p>
                                     <button className="w-full py-3 mt-3 cursor-pointer rounded-lg bg-gray-700 text-white hover:bg-gray-800">Proceeed to checkout</button>
                                 </div>
                             </div>

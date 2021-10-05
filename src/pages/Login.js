@@ -1,11 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { LockClosedIcon } from '@heroicons/react/solid'
 import { useHistory } from 'react-router-dom';
 import Axios from 'axios';
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
 
 function Login() {
   let history = useHistory();
 
+  useEffect( () => {
+    if(cookies.get("user_id") !== undefined){
+      history.push("/admin");
+    }
+  }, [] )
   // get login button click
   function getLoginClick(e){
     var email = document.getElementById("login").elements["email"].value;
@@ -20,7 +28,8 @@ function Login() {
         .then((res) => {
           alert(res.data.data.message)
           if(res.data.data.success){
-            history.push(`/Admin?uid=${res.data.data.id}`);
+            cookies.set("user_id", res.data.data.id, {path: "/"});
+            history.push(`/Admin`);
           }
         })
       }
