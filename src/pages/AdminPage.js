@@ -32,26 +32,53 @@ function AdminPage() {
     const [menuId, setMenuId] = useState([]);
     const [menuCategories, setMenuCategories] = useState([]);
 
+    // order detail
+    const [pendingOrder, setPendingOrder] = useState([]);
+    const [prepareOrder, setPrepareOrder] = useState([]);
+    const [doneOrder, setDoneOrder] = useState([]);
+
     // cart
     const [cart, setCart] = useState([]);
     const [total, setTotal] = useState(0.00);
+    const [method, setmethod] = useState("");
     
-    // useEffect( () => {
-    //     const interval = setInterval(() => {
-    //         const queryString = window.location.search;
-    //         const urlParams = new URLSearchParams(queryString);
-    //         const id = urlParams.get("uid");
+    useEffect( () => {
+        const interval = setInterval(() => {
+            const id = cookies.get("user_id");
 
-    //         Axios.post("http://localhost:4000/getOrder", {
-    //             uid: id
-    //         })
-    //         .then( (res) => {
-    //             console.log(res.data)
-    //         })
-    //     }, 3000);
+            Axios.post("https://eatsy-0329.herokuapp.com/getOrder", {
+                uid: id
+            })
+            .then( (res) => {
+                const data = res.data.data;
+                var pendingCount = 0;
+                for(var i = 0; i < data.length; i++){
+                    if(data[i].order_status === "pending"){
+                        pendingCount++;
+                    }
+                }
+                if(parseInt(document.getElementById("order_pending").innerHTML) !== 0 && 
+                pendingCount > parseInt(document.getElementById("order_pending").innerHTML)){
+                    var lastestOrder =  pendingCount - parseInt(document.getElementById("order_pending").innerHTML);
+                    alert(lastestOrder + " new Order has been made by your customer");
+                }
+                setPendingOrder([]);
+                setPrepareOrder([]);
+                setDoneOrder([]);
+                for(var i = 0; i < data.length; i++){
+                    if(data[i].order_status === "pending"){
+                        setPendingOrder(array => [...array, data[i]]);
+                    }else if(data[i].order_status === "prepare"){
+                        setPrepareOrder(array => [...array, data[i]]);
+                    }else if(data[i].order_status === "done"){
+                        setDoneOrder(array => [...array, data[i]]);
+                    }
+                }
+            })
+        }, 3000);
 
-    //     return () => clearInterval(interval);
-    // }, [] )
+        return () => clearInterval(interval);
+    }, [] )
 
     function insertCategories(data) {
         var myData = [];
@@ -171,6 +198,39 @@ function AdminPage() {
             setCart(arr);
         }
     }
+    function proceedToCheckout(e){
+        if(cart.length < 1){
+            alert("Please add minimum one item into your cart");
+            return;
+        }
+        if(method === ""){
+            alert("Select one method above before you proceed to checkout");
+            return;
+        }
+        if(method === "take-away"){
+            var newCart = updateNewCart(cart);
+            var today = new Date();
+            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            const id = cookies.get("user_id");
+            var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
+            Axios.post('http://localhost:4000/restaurantTakeAway', {
+                id: id,
+                food: JSON.stringify(newCart),
+                amount: newTotal.toString(),
+                type: "take away",
+                status: "pending",
+                date: date
+            })
+            .then((res) => {
+                alert(res.data.data);
+                setCart([]);
+                setTotal(0.00);
+                setmethod("");
+            })
+        }else{
+
+        }
+    }
     
     // calculating total price 
     function calculateTotalPrice(price, action){
@@ -179,6 +239,20 @@ function AdminPage() {
             return;
         }
         setTotal((parseFloat(total) + parseFloat(price)).toFixed(2))
+    }
+
+    // personal used function
+    function updateNewCart(cart){
+        var newCart = [];
+        for(var i = 0; i < cart.length; i++){
+            var data = {
+                id: cart[i].id,
+                quantity: cart[i].quantity,
+                price: cart[i].price
+            }
+            newCart.push(data);
+        }
+        return newCart;
     }
 
     useEffect( () => {
@@ -238,15 +312,15 @@ function AdminPage() {
                                 <h5 className="w-full text-center">Track Order</h5>
                                 <div className="flex">
                                     <div className="mx-2 flex-col">
-                                        <p className="w-full text-center">0</p>
+                                        <p id="order_pending" className="w-full text-center">{pendingOrder.length}</p>
                                         <p>Pending</p>
                                     </div>
                                     <div className="flex-col mx-2">
-                                        <p className="w-full text-center">0</p>
+                                        <p className="w-full text-center">{prepareOrder.length}</p>
                                         <p>Working</p>
                                     </div>
                                     <div className="flex-col mx-2">
-                                        <p className="w-full text-center">0</p>
+                                        <p className="w-full text-center">{doneOrder.length}</p>
                                         <p>Done</p>
                                     </div>
                                 </div>
@@ -311,8 +385,20 @@ function AdminPage() {
                         </div>
                         <div className="bg-white w-1/4 h-full m-3 rounded-md">
                             <div className="w-full flex justify-center items-center">
-                                <button className="bg-gray-100 px-4 py-2 rounded-lg m-2 hover:bg-gray-200 focus:bg-gray-300">Take Away</button>
-                                <button className="bg-gray-100 px-4 py-2 rounded-lg m-2 hover:bg-gray-200 focus:bg-gray-300">Dine In</button>
+                                <button 
+                                    onClick={e => {
+                                        setmethod("take-away")
+                                    }}
+                                    className="bg-gray-100 px-4 py-2 rounded-lg m-2 hover:bg-gray-200 focus:bg-gray-300 checkout-btn">
+                                        Take Away
+                                </button>
+                                <button 
+                                    onClick={e => {
+                                        setmethod("dine-in")
+                                    }}
+                                    className="bg-gray-100 px-4 py-2 rounded-lg m-2 hover:bg-gray-200 focus:bg-gray-300 checkout-btn">
+                                        Dine In
+                                </button>
                             </div>
                             <div className="flex-col p-3 justify-center">
                                 {
@@ -345,7 +431,11 @@ function AdminPage() {
                                     <p className="text-right px-2">Total: RM{total}</p>
                                     <p className="text-right px-2">SST 6%: RM{(parseFloat(total) * 0.06).toFixed(2)}</p>
                                     <p className="text-right px-2">Total + SST: RM{(parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2)}</p>
-                                    <button className="w-full py-3 mt-3 cursor-pointer rounded-lg bg-gray-700 text-white hover:bg-gray-800">Proceeed to checkout</button>
+                                    <button 
+                                        onClick={e => proceedToCheckout(e)}
+                                        className="w-full py-3 mt-3 cursor-pointer rounded-lg bg-gray-700 text-white hover:bg-gray-800">
+                                            Proceeed to checkout
+                                    </button>
                                 </div>
                             </div>
                         </div>
