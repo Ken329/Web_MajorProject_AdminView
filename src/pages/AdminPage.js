@@ -6,6 +6,8 @@ import { MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/outline'
 import { PlusCircle } from 'heroicons-react';
 import { ClimbingBoxLoader } from 'react-spinners';
 import Cookies from 'universal-cookie';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const cookies = new Cookies();
 
@@ -87,7 +89,7 @@ function AdminPage() {
             key={'All'} 
             onClick={e => getCategoriesClicked("All")}
             data-categories={"All"}
-            className="m-2 px-4 py-2 bg-gray-300 rounded-3xl cursor-pointer categories-btn">
+            className="m-2 px-4 py-2 bg-gray-300 rounded-3xl cursor-pointer z-10 categories-btn">
             {"All"}
         </span>);
         for(var i = 0; i < data.length; i++){
@@ -97,12 +99,11 @@ function AdminPage() {
                         key={data[i]} 
                         onClick={e => getCategoriesClicked(e.target.dataset.categories)}
                         data-categories={data[i]}
-                        className="m-2 px-4 py-2 bg-white rounded-3xl cursor-pointer categories-btn">
+                        className="m-2 px-4 py-2 bg-white rounded-3xl cursor-pointer z-10 categories-btn">
                         {data[i]}
                     </span>);
             }
         }
-        getCategoriesClicked("All");
         return list;
     }
 
@@ -116,7 +117,7 @@ function AdminPage() {
                 myBtn.style.backgroundColor = "#fff";
             }
         }
-        var allCon = document.getElementsByClassName("bg-white h-auto flex-col rounded-lg relative m-5");
+        var allCon = document.getElementsByClassName("bg-white h-72 flex-col rounded-lg relative m-5");
         if(categories === "All"){
             for(var myCon of allCon){
                 myCon.style.display = "flex"
@@ -200,11 +201,17 @@ function AdminPage() {
     }
     function proceedToCheckout(e){
         if(cart.length < 1){
-            alert("Please add minimum one item into your cart");
+            toast.warn("Add minimum one item into your cart !", {
+                position: toast.POSITION.TOP_CENTER,
+                autoClose: 3000
+            });
             return;
         }
         if(method === ""){
-            alert("Select one method above before you proceed to checkout");
+            toast.warn("Select one method above before you proceed to checkout !", {
+                position: toast.POSITION.TOP_CENTER,
+                autoClose: 3000
+            });
             return;
         }
         if(method === "take-away"){
@@ -213,7 +220,7 @@ function AdminPage() {
             var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
             const id = cookies.get("user_id");
             var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
-            Axios.post('http://localhost:4000/restaurantTakeAway', {
+            Axios.post('https://eatsy-0329.herokuapp.com/restaurantTakeAway', {
                 id: id,
                 food: JSON.stringify(newCart),
                 amount: newTotal.toString(),
@@ -228,7 +235,32 @@ function AdminPage() {
                 setmethod("");
             })
         }else{
-
+            var tableNo = document.getElementById("table_no").value;
+            if(tableNo === ""){
+                alert("Please fill up your table no section");
+                return;
+            }
+            var newCart = updateNewCart(cart);
+            var today = new Date();
+            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+            const id = cookies.get("user_id");
+            var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
+            Axios.post('https://eatsy-0329.herokuapp.com/restaurantDineIn', {
+                id: id,
+                food: JSON.stringify(newCart),
+                amount: newTotal.toString(),
+                tableNo: tableNo.toString(),
+                type: "take away",
+                status: "pending",
+                date: date
+            })
+            .then((res) => {
+                alert(res.data.data);
+                setCart([]);
+                setTotal(0.00);
+                setmethod("");
+                document.getElementById("table_no").value = "";
+            })
         }
     }
     
@@ -279,6 +311,7 @@ function AdminPage() {
                             setMenuCategories(array => [...array, data[i + 1].food_categories])
                         }
                         setLoading(false);
+                        getCategoriesClicked("All");
                     })
                 }
             })
@@ -288,6 +321,7 @@ function AdminPage() {
     }, [] ) 
     return (
         <div className="min-h-screen w-full bg-gray-100">
+            <ToastContainer />
             {
                 loading ? (
                     <div className="h-screen w-full bg-gray-200 flex justify-center items-center">
@@ -308,7 +342,7 @@ function AdminPage() {
                     <main className="flex relative overflow-hidden">
                         <div className="absolute left-1/3 flex">
                             <div className="cursor-pointer flex-col shadow-lg ml-3 px-3 
-                            py-2 rounded-b-lg relative -top-14 hover:top-0 hover:z-10 hover:bg-gray-100">
+                            py-2 rounded-b-lg relative -top-14 hover:top-0 z-20 bg-gray-100">
                                 <h5 className="w-full text-center">Track Order</h5>
                                 <div className="flex">
                                     <div className="mx-2 flex-col">
@@ -326,7 +360,7 @@ function AdminPage() {
                                 </div>
                             </div>
                             <div className="cursor-pointer flex-col shadow-lg ml-3 px-3 
-                            py-2 rounded-b-lg relative -top-14 hover:top-0 hover:z-10 hover:bg-gray-100">
+                            py-2 rounded-b-lg relative -top-14 hover:top-0 z-20 bg-gray-100">
                                 <h5 className="w-full text-center">Book Table</h5>
                                 <div className="flex">
                                     <div className="mx-2 flex-col">
@@ -353,7 +387,7 @@ function AdminPage() {
                                     userMenu.map((data, index) => {
                                         return <div 
                                                 key={data.item_name}
-                                                className={"bg-white h-auto flex-col rounded-lg relative m-5 categories_"+data.food_categories}>
+                                                className={"bg-white h-72 flex-col rounded-lg relative m-5 categories_"+data.food_categories}>
                                                     <img className="w-full h-3/5 rounded-t-lg" src={data.food_image} />
                                                     <p className="m-2">{data.food_name}</p>
                                                     <p className="m-2">RM {data.food_price}</p>
@@ -394,11 +428,18 @@ function AdminPage() {
                                 </button>
                                 <button 
                                     onClick={e => {
+                                        document.getElementById("div-table").style.display = "flex";
                                         setmethod("dine-in")
                                     }}
                                     className="bg-gray-100 px-4 py-2 rounded-lg m-2 hover:bg-gray-200 focus:bg-gray-300 checkout-btn">
                                         Dine In
                                 </button>
+                            </div>
+                            <div id="div-table" className="w-full hidden justify-center py-1">
+                                <input 
+                                    id="table_no"
+                                    className="w-4/5 h-auto border-gray-400 border-2 px-2 py-1 rounded-md" 
+                                    placeholder="Table No"/>
                             </div>
                             <div className="flex-col p-3 justify-center">
                                 {

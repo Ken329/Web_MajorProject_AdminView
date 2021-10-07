@@ -3,6 +3,8 @@ import { LockClosedIcon } from '@heroicons/react/solid'
 import { useHistory } from 'react-router-dom';
 import Axios from 'axios';
 import Cookies from 'universal-cookie';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const cookies = new Cookies();
 
@@ -21,17 +23,38 @@ function Login() {
 
     if(isNull(email)&&isNull(password)){
       if(validateEmail(email)){
-        Axios.post('https://eatsy-0329.herokuapp.com/login', {
-          email: email,
-          password: password
-        })
-        .then((res) => {
-          alert(res.data.data.message)
-          if(res.data.data.success){
-            cookies.set("user_id", res.data.data.id, {path: "/"});
-            history.push(`/Admin`);
+        const allow = new Promise(resolve => Axios.post('https://eatsy-0329.herokuapp.com/login', {
+                        email: email,
+                        password: password
+                      })
+                      .then((res) => {
+                        resolve(res.data.data)
+                      }))
+        toast.promise(
+          allow,
+          {
+            pending: {
+              render(){
+                return "I'm loading"
+              },
+              icon: false,
+            },
+            success: {
+              render({data}){
+                if(data.success){
+                  cookies.set("user_id", data.id, {path: "/"});
+                  setTimeout( () => {
+                    history.push(`/Admin`);
+                  }, 2000)
+                  return `${data.message}`
+                }else{
+                  return `Wrong Email or Password`
+                }
+              },
+              icon: "🟢",
+            },
           }
-        })
+        )
       }
     }
   }
@@ -39,8 +62,10 @@ function Login() {
   // personal used 
   function isNull(data){
     if(data === ""){
-        alert("Do not leave the field empty")
-        return false
+      toast.warn("Do not leave the field empty", {
+        autoClose: 3000
+      })
+      return false
     }
     return true;
   }
@@ -48,11 +73,14 @@ function Login() {
     if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail)){
       return (true);
     }
-    alert("You have entered an invalid email address!");
+    toast.warn("You have entered an invalid email address!", {
+      autoClose: 3000
+    })
     return (false);
   }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <ToastContainer />
       <div className="max-w-md w-full space-y-8">
         <div>
           <img
