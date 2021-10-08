@@ -11,16 +11,16 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const cookies = new Cookies();
 
-function getUserIcon(gender){
-    switch(gender){
-        case "Mr.":
-            return <img className="h-10 w-10 rounded-full" src="../img/gender-man.png" alt="" />;
-        case "Ms.":
-            return <img className="h-10 w-10 rounded-full" src="../img/gender-women.png" alt="" />;
-        default:
-            return <img className="h-10 w-10 rounded-full" src="../img/gender-other.png" alt="" />;
-    }
-}
+// function getUserIcon(gender){
+//     switch(gender){
+//         case "Mr.":
+//             return <img className="h-10 w-10 rounded-full" src="../img/gender-man.png" alt="" />;
+//         case "Ms.":
+//             return <img className="h-10 w-10 rounded-full" src="../img/gender-women.png" alt="" />;
+//         default:
+//             return <img className="h-10 w-10 rounded-full" src="../img/gender-other.png" alt="" />;
+//     }
+// }
 
 function AdminPage() {
     let history = useHistory();
@@ -62,7 +62,10 @@ function AdminPage() {
                 if(parseInt(document.getElementById("order_pending").innerHTML) !== 0 && 
                 pendingCount > parseInt(document.getElementById("order_pending").innerHTML)){
                     var lastestOrder =  pendingCount - parseInt(document.getElementById("order_pending").innerHTML);
-                    alert(lastestOrder + " new Order has been made by your customer");
+                    toast.info(lastestOrder + " new Order has been made by your customer", {
+                        position: toast.POSITION.TOP_RIGHT,
+                        autoClose: 3000
+                    });
                 }
                 setPendingOrder([]);
                 setPrepareOrder([]);
@@ -202,14 +205,14 @@ function AdminPage() {
     function proceedToCheckout(e){
         if(cart.length < 1){
             toast.warn("Add minimum one item into your cart !", {
-                position: toast.POSITION.TOP_CENTER,
+                position: toast.POSITION.TOP_RIGHT,
                 autoClose: 3000
             });
             return;
         }
         if(method === ""){
             toast.warn("Select one method above before you proceed to checkout !", {
-                position: toast.POSITION.TOP_CENTER,
+                position: toast.POSITION.TOP_RIGHT,
                 autoClose: 3000
             });
             return;
@@ -229,7 +232,10 @@ function AdminPage() {
                 date: date
             })
             .then((res) => {
-                alert(res.data.data);
+                toast.success(res.data.data, {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 3000
+                });
                 setCart([]);
                 setTotal(0.00);
                 setmethod("");
@@ -237,7 +243,10 @@ function AdminPage() {
         }else{
             var tableNo = document.getElementById("table_no").value;
             if(tableNo === ""){
-                alert("Please fill up your table no section");
+                toast.warn("Please fill up your table no section", {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 3000
+                });
                 return;
             }
             var newCart = updateNewCart(cart);
@@ -255,11 +264,15 @@ function AdminPage() {
                 date: date
             })
             .then((res) => {
-                alert(res.data.data);
+                toast.success(res.data.data, {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 3000
+                });
                 setCart([]);
                 setTotal(0.00);
                 setmethod("");
                 document.getElementById("table_no").value = "";
+                document.getElementById("div-table").style.display = "none";
             })
         }
     }
@@ -296,7 +309,10 @@ function AdminPage() {
             })
             .then( (res) => {
                 if(!res.data.success){
-                    alert("Something wrong with your site, try login again");
+                    toast.error("Something wrong with your site, try login again", {
+                        position: toast.POSITION.TOP_RIGHT,
+                        autoClose: 3000
+                    });
                     history.push('/Login');
                 }else{
                     setUserDetail(res.data.data[0]);
@@ -332,7 +348,8 @@ function AdminPage() {
                     <Header 
                         last_name={"Ken"} 
                         first_name={"Liau"} 
-                        icon={getUserIcon(userDetail.user_gender)}
+                        gender={userDetail.user_gender}
+                        section={0}
                     />
                     <header className="bg-white shadow">
                         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">

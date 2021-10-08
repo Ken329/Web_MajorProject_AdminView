@@ -44,7 +44,7 @@ function Login() {
                 if(data.success){
                   cookies.set("user_id", data.id, {path: "/"});
                   setTimeout( () => {
-                    history.push(`/Admin`);
+                    history.push(`/Dashboard`);
                   }, 2000)
                   return `${data.message}`
                 }else{

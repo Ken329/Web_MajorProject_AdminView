@@ -3,12 +3,13 @@ import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 
 const navigation = [
-    { name: 'Dashboard', href: '#', current: true },
+    { name: 'Dashboard', href: 'Dashboard', current: false },
     { name: 'Menu', href: '#', current: false },
     { name: 'QR Code', href: '#', current: false },
-    { name: 'Order History', href: '#', current: false },
+    { name: 'Tracking', href: 'Tracking', current: false },
+    { name: 'History', href: '#', current: false },
     { name: 'Statistic', href: '#', current: false },
-  ]
+]
 const userNavigation = [
     { name: 'Your Profile', href: '#' },
     { name: 'Settings', href: '#' },
@@ -19,7 +20,25 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
+function getUserIcon(gender){
+    switch(gender){
+        case "Mr.":
+            return <img className="h-10 w-10 rounded-full" src="../img/gender-man.png" alt="" />;
+        case "Ms.":
+            return <img className="h-10 w-10 rounded-full" src="../img/gender-women.png" alt="" />;
+        default:
+            return <img className="h-10 w-10 rounded-full" src="../img/gender-other.png" alt="" />;
+    }
+}
+
+function updateSection(section){
+    navigation[section].current = true;
+}
+
 class Header extends Component{
+    componentDidMount(){
+        updateSection(this.props.section)
+    }
     render(){
         return (
             <Disclosure as="nav" className="bg-gray-800">
@@ -70,7 +89,7 @@ class Header extends Component{
                         <div>
                             <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                             <span className="sr-only">Open user menu</span>
-                            {this.props.icon}
+                            {getUserIcon(this.props.gender)}
                             </Menu.Button>
                         </div>
                         <Transition

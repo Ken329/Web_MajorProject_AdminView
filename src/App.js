@@ -5,6 +5,7 @@ import AboutUs from './pages/AboutUs';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import AdminPage from './pages/AdminPage';
+import TracksPage from './pages/TracksPage';
 
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
@@ -21,7 +22,8 @@ function App() {
             <Route path="/AboutUs" exact component = {AboutUs}/>
             <Route path="/Login" exact component = {Login}/>
             <Route path="/SignUp" exact component = {SignUp}/>
-            <Route path="/Admin" exact component = {AdminPage}/>
+            <Route path="/Dashboard" exact component = {AdminPage}/>
+            <Route path="/Tracking" exact component = {TracksPage}/>
           </Switch>
       </Router>
     </>
