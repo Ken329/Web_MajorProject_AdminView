@@ -13,7 +13,7 @@ function Login() {
 
   useEffect( () => {
     if(cookies.get("user_id") !== undefined){
-      history.push("/admin");
+      history.push("/Dashboard");
     }
   }, [] )
   // get login button click
