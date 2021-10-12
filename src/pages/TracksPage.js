@@ -36,7 +36,7 @@ function TracksPage() {
                     setUserDetail(res.data.data[0]);
                     var today = new Date();
                     var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-                    Axios.post("http://localhost:4000/getOrderWithIdNDate", {
+                    Axios.post("https://eatsy-0329.herokuapp.com/getOrderWithIdNDate", {
                         id: id,
                         date: date
                     })
