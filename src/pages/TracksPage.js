@@ -8,18 +8,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const cookies = new Cookies();
-const people = [
-    {
-      name: 'Jane Cooper',
-      title: 'Regional Paradigm Technician',
-      department: 'Optimization',
-      role: 'Admin',
-      email: 'jane.cooper@example.com',
-      image:
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',
-    },
-    // More people...
-  ]
 
 function TracksPage() {
     let history = useHistory();
@@ -27,6 +15,8 @@ function TracksPage() {
     const [loading, setLoading] = useState(true);
 
     const [userDetail, setUserDetail] = useState([]);
+    const [userOrderId, setUserOrderId] = useState([]);
+    const [userOrder, setUserOrder] = useState([]);
 
     useEffect( () => {
         const id = cookies.get("user_id")
@@ -44,26 +34,56 @@ function TracksPage() {
                     history.push('/Login');
                 }else{
                     setUserDetail(res.data.data[0]);
-                    setLoading(false);
-                    // Axios.post("https://eatsy-0329.herokuapp.com/getRestaurantMenuById", {
-                    //     id: id
-                    // })
-                    // .then( (res) => {
-                    //     const data = res.data.data;
-                    //     for(var i = 1; i < data.length; i+=2){
-                    //         setUserMenu(array => [...array, data[i + 1]])
-                    //         setMenuId(array => [...array, data[i]])
-                    //         setMenuCategories(array => [...array, data[i + 1].food_categories])
-                    //     }
-                    //     setLoading(false);
-                    //     getCategoriesClicked("All");
-                    // })
+                    var today = new Date();
+                    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                    Axios.post("http://localhost:4000/getOrderWithIdNDate", {
+                        id: id,
+                        date: date
+                    })
+                    .then((res) => {
+                        if(res.data.success){
+                            setUserOrder([]);
+                            const data = res.data.data;
+                            for(var i = 0; i < data.length; i+=2){
+                                setUserOrderId(array => [...array, data[i]])
+                                setUserOrder(array => [...array, data[i+1]]);
+                            }
+                            setLoading(false);
+                        }
+                    })
                 }
             })
         }else{
             history.push("/");
         }
     }, [] ) 
+
+    // personal used function
+    function filterOrderStatus(status){
+        switch(status){
+            case "pending":
+                return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                            {status}
+                        </span>
+            case "approve":
+                return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-pink-100 text-pink-800">
+                            {status}
+                        </span>
+            case "prepare":
+                return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                            {status}
+                        </span>
+            case "almost":
+                return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                            {status}
+                        </span>
+            default:
+                return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            {status}
+                        </span>
+        }
+    }
+
     return (
         <div className="min-h-screen w-full bg-gray-100">
             <ToastContainer />
@@ -86,7 +106,7 @@ function TracksPage() {
                         </div>
                     </header>
                     <main className="flex-col relative overflow-hidden">
-                        <section className="w-4/5 h-auto flex mx-auto py-3">
+                        <section className="w-4/5 h-auto flex mx-auto py-5">
                             <div 
                                 id="order-btn"
                                 className="bg-white py-2 px-3 rounded-lg m-2 cursor-pointer">
@@ -99,8 +119,8 @@ function TracksPage() {
                             </div>
                         </section>
                         <div className="flex flex-col">
-                        <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                            <div className="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                        <section className="w-11/12 mx-auto pb-5">
+                            <div className="align-middle inline-block min-w-full">
                             <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                                 <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
@@ -109,13 +129,13 @@ function TracksPage() {
                                         scope="col"
                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                     >
-                                        Name
+                                        ID
                                     </th>
                                     <th
                                         scope="col"
                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                     >
-                                        Title
+                                        Type
                                     </th>
                                     <th
                                         scope="col"
@@ -127,7 +147,13 @@ function TracksPage() {
                                         scope="col"
                                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                     >
-                                        Role
+                                        Date
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    >
+                                        Amount
                                     </th>
                                     <th scope="col" className="relative px-6 py-3">
                                         <span className="sr-only">Edit</span>
@@ -135,7 +161,41 @@ function TracksPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {people.map((person) => (
+                                    {
+                                        userOrder.map( (data, index) => {
+                                            return <tr key={index}>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{userOrderId[index]}</td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_type}</td>
+                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                        {filterOrderStatus(data.order_status)}
+                                                        </td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_date}</td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">RM {data.order_amount}</td>
+                                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                                                            View
+                                                        </a>
+                                                        </td>
+                                                    </tr>
+                                        })
+                                    }
+                                    {/* <tr>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{"dsasad"}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{"Take Away"}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Pending
+                                        </span>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{"11/12/2021"}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{"RM 11.20"}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                                            View
+                                        </a>
+                                        </td>
+                                    </tr> */}
+                                    {/* {people.map((person) => (
                                     <tr key={person.email}>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
@@ -164,12 +224,12 @@ function TracksPage() {
                                         </a>
                                         </td>
                                     </tr>
-                                    ))}
+                                    ))} */}
                                 </tbody>
                                 </table>
                             </div>
                             </div>
-                        </div>
+                        </section>
                         </div>
                     </main>
                     </>
