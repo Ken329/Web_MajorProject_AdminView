@@ -223,9 +223,10 @@ function AdminPage() {
             var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
             const id = cookies.get("user_id");
             var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
-            Axios.post('https://eatsy-0329.herokuapp.com/restaurantTakeAway', {
+            Axios.post('http://localhost:4000/restaurantTakeAway', {
                 id: id,
-                food: JSON.stringify(newCart),
+                orderId: uniqueId(),
+                food: JSON.stringify({food: newCart}),
                 amount: newTotal.toString(),
                 type: "take away",
                 status: "pending",
@@ -254,9 +255,10 @@ function AdminPage() {
             var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
             const id = cookies.get("user_id");
             var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
-            Axios.post('https://eatsy-0329.herokuapp.com/restaurantDineIn', {
+            Axios.post('http://localhost:4000/restaurantDineIn', {
                 id: id,
-                food: JSON.stringify(newCart),
+                orderId: uniqueId(),
+                food: JSON.stringify({food: newCart}),
                 amount: newTotal.toString(),
                 tableNo: tableNo.toString(),
                 type: "take away",
@@ -298,6 +300,16 @@ function AdminPage() {
             newCart.push(data);
         }
         return newCart;
+    }
+    function uniqueId () {
+        var idStrLen = 32;
+        var idStr = (Math.floor((Math.random() * 25)) + 10).toString(36) + "_";
+        idStr += (new Date()).getTime().toString(36) + "_";
+        do {
+            idStr += (Math.floor((Math.random() * 35))).toString(36);
+        } while (idStr.length < idStrLen);
+    
+        return (idStr);
     }
 
     useEffect( () => {

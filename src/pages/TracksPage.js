@@ -15,7 +15,6 @@ function TracksPage() {
     const [loading, setLoading] = useState(true);
 
     const [userDetail, setUserDetail] = useState([]);
-    const [userOrderId, setUserOrderId] = useState([]);
     const [userOrder, setUserOrder] = useState([]);
 
     useEffect( () => {
@@ -36,7 +35,7 @@ function TracksPage() {
                     setUserDetail(res.data.data[0]);
                     var today = new Date();
                     var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-                    Axios.post("https://eatsy-0329.herokuapp.com/getOrderWithIdNDate", {
+                    Axios.post("http://localhost:4000/getOrderWithIdNDate", {
                         id: id,
                         date: date
                     })
@@ -44,9 +43,8 @@ function TracksPage() {
                         if(res.data.success){
                             setUserOrder([]);
                             const data = res.data.data;
-                            for(var i = 0; i < data.length; i+=2){
-                                setUserOrderId(array => [...array, data[i]])
-                                setUserOrder(array => [...array, data[i+1]]);
+                            for(var i = 0; i < data.length; i++){
+                                setUserOrder(array => [...array, data[i]]);
                             }
                             setLoading(false);
                         }
@@ -121,113 +119,73 @@ function TracksPage() {
                         <div className="flex flex-col">
                         <section className="w-11/12 mx-auto pb-5">
                             <div className="align-middle inline-block min-w-full">
-                            <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                        ID
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                        Type
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                        Status
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                        Date
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                    >
-                                        Amount
-                                    </th>
-                                    <th scope="col" className="relative px-6 py-3">
-                                        <span className="sr-only">Edit</span>
-                                    </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {
-                                        userOrder.map( (data, index) => {
-                                            return <tr key={index}>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{userOrderId[index]}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_type}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                        {filterOrderStatus(data.order_status)}
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_date}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">RM {data.order_amount}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                                                            View
-                                                        </a>
-                                                        </td>
-                                                    </tr>
-                                        })
-                                    }
-                                    {/* <tr>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{"dsasad"}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{"Take Away"}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Pending
-                                        </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{"11/12/2021"}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{"RM 11.20"}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                                            View
-                                        </a>
-                                        </td>
-                                    </tr> */}
-                                    {/* {people.map((person) => (
-                                    <tr key={person.email}>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="flex items-center">
-                                            <div className="flex-shrink-0 h-10 w-10">
-                                            <img className="h-10 w-10 rounded-full" src={person.image} alt="" />
-                                            </div>
-                                            <div className="ml-4">
-                                            <div className="text-sm font-medium text-gray-900">{person.name}</div>
-                                            <div className="text-sm text-gray-500">{person.email}</div>
-                                            </div>
+                                {
+                                    userOrder.length <= 0 ? (
+                                        <p className="w-full text-center text-gray-500 font-bold">No Tracking order</p>
+                                    ) : (
+                                        <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                            <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    ID
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Type
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Status
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Date
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Amount
+                                                </th>
+                                                <th scope="col" className="relative px-6 py-3">
+                                                    <span className="sr-only">Edit</span>
+                                                </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {
+                                                    userOrder.map( (data, index) => {
+                                                        return <tr key={index}>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_id}</td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_type}</td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                                    {filterOrderStatus(data.order_status)}
+                                                                    </td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_date}</td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">RM {data.order_amount}</td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                                    <a href={"/Tracking/TrackingOrder?uid="+data.order_id} className="text-indigo-600 hover:text-indigo-900">
+                                                                        View
+                                                                    </a>
+                                                                    </td>
+                                                                </tr>
+                                                    })
+                                                }
+                                            </tbody>
+                                            </table>
                                         </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                        <div className="text-sm text-gray-900">{person.title}</div>
-                                        <div className="text-sm text-gray-500">{person.department}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                            Active
-                                        </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{person.role}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                                            Edit
-                                        </a>
-                                        </td>
-                                    </tr>
-                                    ))} */}
-                                </tbody>
-                                </table>
-                            </div>
+                                    )
+                                }
                             </div>
                         </section>
                         </div>
