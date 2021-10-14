@@ -41,7 +41,7 @@ function TracksPage() {
                     const urlParams = new URLSearchParams(queryString);
                     const orderId = urlParams.get('uid');
                     setOrderId(orderId);
-                    Axios.post("http://localhost:4000/trackOrderWithOrderId", {
+                    Axios.post("https://eatsy-0329.herokuapp.com/trackOrderWithOrderId", {
                         id: id,
                         orderId: orderId
                     })
@@ -72,7 +72,7 @@ function TracksPage() {
             foodListId.push(foodList[i].id)
         }
         
-        Axios.post("http://localhost:4000/trackingFoodWithId", {
+        Axios.post("https://eatsy-0329.herokuapp.com/trackingFoodWithId", {
             restaurantId: id,
             foodId: foodListId
         })

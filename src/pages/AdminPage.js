@@ -11,17 +11,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const cookies = new Cookies();
 
-// function getUserIcon(gender){
-//     switch(gender){
-//         case "Mr.":
-//             return <img className="h-10 w-10 rounded-full" src="../img/gender-man.png" alt="" />;
-//         case "Ms.":
-//             return <img className="h-10 w-10 rounded-full" src="../img/gender-women.png" alt="" />;
-//         default:
-//             return <img className="h-10 w-10 rounded-full" src="../img/gender-other.png" alt="" />;
-//     }
-// }
-
 function AdminPage() {
     let history = useHistory();
 
@@ -223,7 +212,7 @@ function AdminPage() {
             var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
             const id = cookies.get("user_id");
             var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
-            Axios.post('http://localhost:4000/restaurantTakeAway', {
+            Axios.post('https://eatsy-0329.herokuapp.com/restaurantTakeAway', {
                 id: id,
                 orderId: uniqueId(),
                 food: JSON.stringify({food: newCart}),
@@ -255,7 +244,7 @@ function AdminPage() {
             var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
             const id = cookies.get("user_id");
             var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
-            Axios.post('http://localhost:4000/restaurantDineIn', {
+            Axios.post('https://eatsy-0329.herokuapp.com/restaurantDineIn', {
                 id: id,
                 orderId: uniqueId(),
                 food: JSON.stringify({food: newCart}),
