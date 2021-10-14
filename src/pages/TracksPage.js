@@ -16,6 +16,9 @@ function TracksPage() {
 
     const [userDetail, setUserDetail] = useState([]);
     const [userOrder, setUserOrder] = useState([]);
+    const [userTable, setUserTable] = useState([]);
+
+    const [trackingBtn, setTrackingBtn] = useState([]);
 
     useEffect( () => {
         const id = cookies.get("user_id")
@@ -33,11 +36,8 @@ function TracksPage() {
                     history.push('/Login');
                 }else{
                     setUserDetail(res.data.data[0]);
-                    var today = new Date();
-                    var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-                    Axios.post("https://eatsy-0329.herokuapp.com/getOrderWithIdNDate", {
+                    Axios.post("http://localhost:4000/getOrderWithIdNDate", {
                         id: id,
-                        date: date
                     })
                     .then((res) => {
                         if(res.data.success){
@@ -46,6 +46,7 @@ function TracksPage() {
                             for(var i = 0; i < data.length; i++){
                                 setUserOrder(array => [...array, data[i]]);
                             }
+                            setTrackingBtn("order");
                             setLoading(false);
                         }
                     })
@@ -55,6 +56,12 @@ function TracksPage() {
             history.push("/");
         }
     }, [] ) 
+
+
+    // getting data
+    function getTableData(id){
+
+    }
 
     // personal used function
     function filterOrderStatus(status){
@@ -107,12 +114,26 @@ function TracksPage() {
                         <section className="w-4/5 h-auto flex mx-auto py-5">
                             <div 
                                 id="order-btn"
-                                className="bg-white py-2 px-3 rounded-lg m-2 cursor-pointer">
+                                onClick={ e => {
+                                    setTrackingBtn("order")
+                                }}
+                                className={
+                                    trackingBtn === "order" ? "bg-gray-200 py-2 px-3 rounded-lg m-2 cursor-pointer"
+                                    : "bg-white py-2 px-3 rounded-lg m-2 cursor-pointer"
+                                }
+                                >
                                     Order
                             </div>
                             <div 
                                 id="table-btn"
-                                className="bg-white py-2 px-3 rounded-lg m-2 cursor-pointer">
+                                onClick={ e => {
+                                    setTrackingBtn("table")
+                                }}
+                                className={
+                                    trackingBtn === "table" ? "bg-gray-200 py-2 px-3 rounded-lg m-2 cursor-pointer"
+                                    : "bg-white py-2 px-3 rounded-lg m-2 cursor-pointer"
+                                }
+                                >
                                     Table
                             </div>
                         </section>
@@ -120,7 +141,73 @@ function TracksPage() {
                         <section className="w-11/12 mx-auto pb-5">
                             <div className="align-middle inline-block min-w-full">
                                 {
+                                    trackingBtn === "order" ?
                                     userOrder.length <= 0 ? (
+                                        <p className="w-full text-center text-gray-500 font-bold">No Tracking order</p>
+                                    ) : (
+                                        <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                            <table className="min-w-full divide-y divide-gray-200">
+                                            <thead className="bg-gray-50">
+                                                <tr>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    ID
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Type
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Status
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Time
+                                                </th>
+                                                <th
+                                                    scope="col"
+                                                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                                >
+                                                    Amount
+                                                </th>
+                                                <th scope="col" className="relative px-6 py-3">
+                                                    <span className="sr-only">Edit</span>
+                                                </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="bg-white divide-y divide-gray-200">
+                                                {
+                                                    userOrder.map( (data, index) => {
+                                                        return <tr key={index}>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_id}</td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_type}</td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                                    {filterOrderStatus(data.order_status)}
+                                                                    </td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(data.order_date.seconds * 1000).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">RM {data.order_amount}</td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                                    <a href={"/Tracking/TrackingOrder?uid="+data.order_id} className="text-indigo-600 hover:text-indigo-900">
+                                                                        View
+                                                                    </a>
+                                                                    </td>
+                                                                </tr>
+                                                    })
+                                                }
+                                            </tbody>
+                                            </table>
+                                        </div>
+                                    )
+                                    : userOrder.length <= 0 ? (
                                         <p className="w-full text-center text-gray-500 font-bold">No Tracking order</p>
                                     ) : (
                                         <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -151,12 +238,12 @@ function TracksPage() {
                                                 >
                                                     Date
                                                 </th>
-                                                <th
+                                                {/* <th
                                                     scope="col"
                                                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                                                 >
                                                     Amount
-                                                </th>
+                                                </th> */}
                                                 <th scope="col" className="relative px-6 py-3">
                                                     <span className="sr-only">Edit</span>
                                                 </th>
@@ -171,7 +258,7 @@ function TracksPage() {
                                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                                     {filterOrderStatus(data.order_status)}
                                                                     </td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_date}</td>
+                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(data.order_date.seconds * 1000).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">RM {data.order_amount}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                                     <a href={"/Tracking/TrackingOrder?uid="+data.order_id} className="text-indigo-600 hover:text-indigo-900">

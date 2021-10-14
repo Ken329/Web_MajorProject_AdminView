@@ -208,8 +208,6 @@ function AdminPage() {
         }
         if(method === "take-away"){
             var newCart = updateNewCart(cart);
-            var today = new Date();
-            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
             const id = cookies.get("user_id");
             var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
             Axios.post('https://eatsy-0329.herokuapp.com/restaurantTakeAway', {
@@ -219,7 +217,6 @@ function AdminPage() {
                 amount: newTotal.toString(),
                 type: "take away",
                 status: "pending",
-                date: date
             })
             .then((res) => {
                 toast.success(res.data.data, {
@@ -240,8 +237,6 @@ function AdminPage() {
                 return;
             }
             var newCart = updateNewCart(cart);
-            var today = new Date();
-            var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
             const id = cookies.get("user_id");
             var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
             Axios.post('https://eatsy-0329.herokuapp.com/restaurantDineIn', {
@@ -252,7 +247,6 @@ function AdminPage() {
                 tableNo: tableNo.toString(),
                 type: "take away",
                 status: "pending",
-                date: date
             })
             .then((res) => {
                 toast.success(res.data.data, {
