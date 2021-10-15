@@ -61,7 +61,7 @@ function TracksPage() {
 
     // getting data
     function getTableData(id){
-        Axios.post("http://localhost:4000/getTableWithIdNDate", {
+        Axios.post("https://eatsy-0329.herokuapp.com/getTableWithIdNDate", {
             id: id
         })
         .then((res) => {
@@ -85,7 +85,7 @@ function TracksPage() {
         
         const id = cookies.get("user_id");
         var tableId = uniqueId();
-        Axios.post("http://localhost:4000/insertNewTable", {
+        Axios.post("https://eatsy-0329.herokuapp.com/insertNewTable", {
             id: id,
             tableId: tableId,
             name: data[0],
@@ -111,12 +111,15 @@ function TracksPage() {
     function updateTableStatus(e, index){
         const id = cookies.get("user_id");
         userTable[index].status = document.getElementById("status_"+index).value;
-        const tableId = userTable[index].id;
-
+       
         Axios.put("http://localhost:4000/updateTableStatus", {
             id: id,
-            tableId: tableId,
-            data: userTable[index]
+            tableId: userTable[index].id,
+            name: userTable[index].name,
+            pax: userTable[index].pax,
+            phone: userTable[index].phone,
+            date: toDateTime(userTable[index].date.seconds),
+            status: userTable[index].status,
         })
         .then((res) => {
             getTableData(id);
@@ -128,6 +131,11 @@ function TracksPage() {
     }
 
     // personal used function
+    function toDateTime(secs) {
+        var t = new Date(Date.UTC(1970, 0, 1)); // Epoch
+        t.setUTCSeconds(secs);
+        return t;
+    }
     function filterOrderStatus(status){
         switch(status){
             case "pending":

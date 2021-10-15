@@ -28,6 +28,10 @@ function AdminPage() {
     const [prepareOrder, setPrepareOrder] = useState([]);
     const [doneOrder, setDoneOrder] = useState([]);
 
+    // table detail
+    const [pendingTable, setPendingTable] = useState([]);
+    const [approvedTable, setApprovedTable] = useState([]);
+
     // cart
     const [cart, setCart] = useState([]);
     const [total, setTotal] = useState(0.00);
@@ -37,35 +41,70 @@ function AdminPage() {
         const interval = setInterval(() => {
             const id = cookies.get("user_id");
 
-            Axios.post("https://eatsy-0329.herokuapp.com/getOrder", {
-                uid: id
+            Axios.post("https://eatsy-0329.herokuapp.com/getOrderWithIdNDate", {
+                id: id
             })
             .then( (res) => {
-                const data = res.data.data;
-                var pendingCount = 0;
-                for(var i = 0; i < data.length; i++){
-                    if(data[i].order_status === "pending"){
-                        pendingCount++;
+                if(res.data.success){
+                    const data = res.data.data;
+                    var pendingCount = 0;
+                    for(var i = 0; i < data.length; i++){
+                        if(data[i].order_status === "pending"){
+                            pendingCount++;
+                        }
+                    }
+                    if(parseInt(document.getElementById("order_pending").innerHTML) !== 0 && 
+                    pendingCount > parseInt(document.getElementById("order_pending").innerHTML)){
+                        var lastestOrder =  pendingCount - parseInt(document.getElementById("order_pending").innerHTML);
+                        toast.info(lastestOrder + " new Order has been made by your customer", {
+                            position: toast.POSITION.TOP_RIGHT,
+                            autoClose: 3000
+                        });
+                    }
+                    setPendingOrder([]);
+                    setPrepareOrder([]);
+                    setDoneOrder([]);
+                    for(var i = 0; i < data.length; i++){
+                        if(data[i].order_status === "pending"){
+                            setPendingOrder(array => [...array, data[i]]);
+                        }else if(data[i].order_status === "prepare"){
+                            setPrepareOrder(array => [...array, data[i]]);
+                        }else if(data[i].order_status === "done"){
+                            setDoneOrder(array => [...array, data[i]]);
+                        }
                     }
                 }
-                if(parseInt(document.getElementById("order_pending").innerHTML) !== 0 && 
-                pendingCount > parseInt(document.getElementById("order_pending").innerHTML)){
-                    var lastestOrder =  pendingCount - parseInt(document.getElementById("order_pending").innerHTML);
-                    toast.info(lastestOrder + " new Order has been made by your customer", {
-                        position: toast.POSITION.TOP_RIGHT,
-                        autoClose: 3000
-                    });
-                }
-                setPendingOrder([]);
-                setPrepareOrder([]);
-                setDoneOrder([]);
-                for(var i = 0; i < data.length; i++){
-                    if(data[i].order_status === "pending"){
-                        setPendingOrder(array => [...array, data[i]]);
-                    }else if(data[i].order_status === "prepare"){
-                        setPrepareOrder(array => [...array, data[i]]);
-                    }else if(data[i].order_status === "done"){
-                        setDoneOrder(array => [...array, data[i]]);
+            })
+
+            Axios.post("https://eatsy-0329.herokuapp.com/getTableWithIdNDate", {
+                id: id
+            })
+            .then((res) => {
+                if(res.data.success){
+                    const data = res.data.data;
+                    console.log(data)
+                    var pendingCount = 0;
+                    for(var i = 0; i < data.length; i++){
+                        if(data[i].status === "pending"){
+                            pendingCount++;
+                        }
+                    }
+                    if(parseInt(document.getElementById("table_pending").innerHTML) !== 0 && 
+                    pendingCount > parseInt(document.getElementById("table_pending").innerHTML)){
+                        var lastestOrder =  pendingCount - parseInt(document.getElementById("table_pending").innerHTML);
+                        toast.info(lastestOrder + " new table has been book by your customer", {
+                            position: toast.POSITION.TOP_RIGHT,
+                            autoClose: 3000
+                        });
+                    }
+                    setPendingTable([]);
+                    setApprovedTable([]);
+                    for(var i = 0; i < data.length; i++){
+                        if(data[i].status === "pending"){
+                            setPendingTable(array => [...array, data[i]]);
+                        }else if(data[i].status === "approved"){
+                            setApprovedTable(array => [...array, data[i]]);
+                        }
                     }
                 }
             })
@@ -376,16 +415,12 @@ function AdminPage() {
                                 <h5 className="w-full text-center">Book Table</h5>
                                 <div className="flex">
                                     <div className="mx-2 flex-col">
-                                        <p className="w-full text-center">0</p>
+                                        <p id="table_pending" className="w-full text-center">{pendingTable.length}</p>
                                         <p>Pending</p>
                                     </div>
                                     <div className="flex-col mx-2">
-                                        <p className="w-full text-center">0</p>
-                                        <p>Working</p>
-                                    </div>
-                                    <div className="flex-col mx-2">
-                                        <p className="w-full text-center">0</p>
-                                        <p>Done</p>
+                                        <p className="w-full text-center">{approvedTable.length}</p>
+                                        <p>Approved</p>
                                     </div>
                                 </div>
                             </div>
