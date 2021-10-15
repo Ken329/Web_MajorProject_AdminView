@@ -55,11 +55,11 @@ function TracksPage() {
             orderId: orderId
         })
         .then((res) => {
-        if(res.data.success){
-            const data = res.data.data[0]
-            setOrderDetail(data);
-            getOrderFood(data.order_food);
-            setLoading(false);
+            if(res.data.success){
+                const data = res.data.data[0]
+                setOrderDetail(data);
+                getOrderFood(data.order_food);
+                setLoading(false);
             }
         })
     }
