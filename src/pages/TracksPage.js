@@ -36,7 +36,7 @@ function TracksPage() {
                     history.push('/Login');
                 }else{
                     setUserDetail(res.data.data[0]);
-                    Axios.post("http://localhost:4000/getOrderWithIdNDate", {
+                    Axios.post("https://eatsy-0329.herokuapp.com/getOrderWithIdNDate", {
                         id: id,
                     })
                     .then((res) => {

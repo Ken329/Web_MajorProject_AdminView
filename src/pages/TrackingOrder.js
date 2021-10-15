@@ -93,7 +93,7 @@ function TracksPage() {
         const orderId = urlParams.get('uid');
         var status = document.getElementById("order_status").value;
         orderDetail.order_status = status;
-        Axios.put("http://localhost:4000/updateOrderStatus", {
+        Axios.put("https://eatsy-0329.herokuapp.com/updateOrderStatus", {
             id: id, 
             orderId: orderId,
             orderDetail: orderDetail
