@@ -4,9 +4,16 @@ import Features from './pages/Features';
 import AboutUs from './pages/AboutUs';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+
+// admin section
 import AdminPage from './pages/AdminPage';
+
+// tracking section
 import TracksPage from './pages/TracksPage';
-import TrackingOrder from './pages/TrackingOrder'
+import TrackingOrder from './pages/TrackingOrder';
+
+// history section
+import HistoryPage from './pages/HistoryPage';
 
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
@@ -25,7 +32,8 @@ function App() {
             <Route path="/SignUp" exact component = {SignUp}/>
             <Route path="/Dashboard" exact component = {AdminPage}/>
             <Route path="/Tracking" exact component = {TracksPage}/>
-            <Route path="/Tracking/TrackingOrder" exact component = {TrackingOrder}/>
+            <Route path="/TrackingOrder" exact component = {TrackingOrder}/>
+            <Route path="/History" exact component = {HistoryPage}/>
           </Switch>
       </Router>
     </>

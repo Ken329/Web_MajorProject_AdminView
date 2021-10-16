@@ -37,20 +37,7 @@ function TracksPage() {
                     history.push('/Login');
                 }else{
                     setUserDetail(res.data.data[0]);
-                    Axios.post("https://eatsy-0329.herokuapp.com/getOrderWithIdNDate", {
-                        id: id,
-                    })
-                    .then((res) => {
-                        if(res.data.success){
-                            setUserOrder([]);
-                            const data = res.data.data;
-                            for(var i = 0; i < data.length; i++){
-                                setUserOrder(array => [...array, data[i]]);
-                            }
-                            getTableData(id);
-                            setLoading(false);
-                        }
-                    })
+                    getOrderData(id);
                 }
             })
         }else{
@@ -60,6 +47,22 @@ function TracksPage() {
 
 
     // getting data
+    function getOrderData(id){
+        Axios.post("https://eatsy-0329.herokuapp.com/getOrderWithIdNDate", {
+            id: id,
+        })
+        .then((res) => {
+            if(res.data.success){
+                setUserOrder([]);
+                const data = res.data.data;
+                for(var i = 0; i < data.length; i++){
+                    setUserOrder(array => [...array, data[i]]);
+                }
+                getTableData(id);
+                setLoading(false);
+            }
+        })
+    }
     function getTableData(id){
         Axios.post("https://eatsy-0329.herokuapp.com/getTableWithIdNDate", {
             id: id
@@ -108,18 +111,33 @@ function TracksPage() {
     }
     
     // update data
+    function updateOrderStatus(e, orderId){
+        const id = cookies.get("user_id");
+        var status = e.target.value;
+        
+        Axios.put("https://eatsy-0329.herokuapp.com/updateOrderStatus", {
+            id: id, 
+            orderId: orderId,
+            status: status
+        })
+        .then((res) => {
+            if(res.data.success){
+                getOrderData(id)
+                toast.success(res.data.data, {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 3000
+                });
+            }
+        })
+    }
     function updateTableStatus(e, index){
         const id = cookies.get("user_id");
-        userTable[index].status = document.getElementById("status_"+index).value;
+        const status = document.getElementById("status_"+index).value;
        
-        Axios.put("http://localhost:4000/updateTableStatus", {
+        Axios.put("https://eatsy-0329.herokuapp.com/updateTableStatus", {
             id: id,
             tableId: userTable[index].id,
-            name: userTable[index].name,
-            pax: userTable[index].pax,
-            phone: userTable[index].phone,
-            date: toDateTime(userTable[index].date.seconds),
-            status: userTable[index].status,
+            status: status,
         })
         .then((res) => {
             getTableData(id);
@@ -131,35 +149,6 @@ function TracksPage() {
     }
 
     // personal used function
-    function toDateTime(secs) {
-        var t = new Date(Date.UTC(1970, 0, 1)); // Epoch
-        t.setUTCSeconds(secs);
-        return t;
-    }
-    function filterOrderStatus(status){
-        switch(status){
-            case "pending":
-                return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                            {status}
-                        </span>
-            case "approve":
-                return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-pink-100 text-pink-800">
-                            {status}
-                        </span>
-            case "prepare":
-                return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
-                            {status}
-                        </span>
-            case "almost":
-                return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                            {status}
-                        </span>
-            default:
-                return <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                            {status}
-                        </span>
-        }
-    }
     function uniqueId () {
         var idStrLen = 20;
         var idStr = (Math.floor((Math.random() * 25)) + 10).toString(36) + "_";
@@ -274,12 +263,33 @@ function TracksPage() {
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_id}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_type}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap">
-                                                                    {filterOrderStatus(data.order_status)}
+                                                                        <select 
+                                                                            onChange={e => {
+                                                                                updateOrderStatus(e, data.order_id)
+                                                                            }}
+                                                                            className={
+                                                                                data.order_status === "pending" 
+                                                                                ? "px-2 py-1 bg-yellow-100 text-yellow-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
+                                                                                : data.order_status === "approve" ?
+                                                                                "px-2 py-1 bg-pink-100 text-pink-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
+                                                                                : data.order_status === "prepare" ?
+                                                                                "px-2 py-1 bg-indigo-100 text-indigo-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
+                                                                                : data.order_status === "almost" ?
+                                                                                "px-2 py-1 bg-purple-100 text-purple-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
+                                                                                : "px-2 py-1 bg-green-100 text-green-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
+                                                                            }
+                                                                            defaultValue={data.order_status}>
+                                                                                <option value="pending">Pending</option>
+                                                                                <option value="approve">Approved</option>
+                                                                                <option value="prepare">Prepare</option>
+                                                                                <option value="almost">Almost</option>
+                                                                                <option value="done">Done</option>
+                                                                        </select>
                                                                     </td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(data.order_date.seconds * 1000).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">RM {data.order_amount}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                                    <a href={"/Tracking/TrackingOrder?uid="+data.order_id} className="text-indigo-600 hover:text-indigo-900">
+                                                                    <a href={"/TrackingOrder?uid="+data.order_id} className="text-indigo-600 hover:text-indigo-900">
                                                                         View
                                                                     </a>
                                                                     </td>
@@ -401,8 +411,13 @@ function TracksPage() {
                                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                                         <select 
                                                                             id={"status_"+index}
-                                                                            className="px-2 py-1 bg-white shadow-lg rounded-xl border-0 
-                                                                            outline-none focus:border-gray-50"
+                                                                            className={
+                                                                                data.status === "pending" 
+                                                                                ? "px-2 py-1 bg-yellow-100 text-yellow-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
+                                                                                : data.status === "approved" ?
+                                                                                "px-2 py-1 bg-pink-100 text-pink-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
+                                                                                : "px-2 py-1 bg-red-100 text-red-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
+                                                                            }
                                                                             defaultValue={data.status}>
                                                                                 <option value="pending">Pending</option>
                                                                                 <option value="approved">Approved</option>

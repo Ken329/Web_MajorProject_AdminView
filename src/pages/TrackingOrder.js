@@ -6,7 +6,6 @@ import { ClimbingBoxLoader } from 'react-spinners';
 import Cookies from 'universal-cookie';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { CloudUploadIcon } from '@heroicons/react/outline';
 
 const cookies = new Cookies();
 
@@ -86,35 +85,6 @@ function TracksPage() {
             }
         })
     }
-    function updateOrderStatus(e){
-        const id = cookies.get("user_id");
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        const orderId = urlParams.get('uid');
-        var status = document.getElementById("order_status").value;
-        orderDetail.order_status = status;
-        Axios.put("https://eatsy-0329.herokuapp.com/updateOrderStatus", {
-            id: id, 
-            orderId: orderId,
-            orderDetail: orderDetail
-        })
-        .then((res) => {
-            if(res.data.success){
-                toast.success(res.data.data, {
-                    position: toast.POSITION.TOP_RIGHT,
-                    autoClose: 3000
-                });
-                setLoading(true)
-                setOrderDetail([]);
-                setOrderMenu([]);
-                setOrderMenuDetail([]);
-                const queryString = window.location.search;
-                const urlParams = new URLSearchParams(queryString);
-                const orderId = urlParams.get('uid');
-                getOrderData(id, orderId)
-            }
-        })
-    }
 
     return (
         <div className="min-h-screen w-full bg-gray-100">
@@ -161,21 +131,7 @@ function TracksPage() {
                             <p className="my-2">Paying Method: {orderDetail.order_method === undefined ? "-" : orderDetail.order_method}</p>
                             <p className="my-2">Having Type: {orderDetail.order_type}</p>
                             <p className="my-2">Total Amount: RM{orderDetail.order_amount}</p>
-                            <div className="flex items-center my-2">
-                                <p>Status: 
-                                    <select 
-                                        defaultValue={orderDetail.order_status} 
-                                        id="order_status"
-                                        className="px-2 py-1 mx-2 rounded-lg cursor-pointer">
-                                            <option value="pending">Pending</option>
-                                            <option value="approve">Approve</option>
-                                            <option value="prepare">Prepare</option>
-                                            <option value="almost">Almost</option>
-                                            <option value="done">Done</option>
-                                    </select>
-                                </p>
-                                <CloudUploadIcon className="w-5 h-5 mx-1.5 cursor-pointer" onClick={e => updateOrderStatus(e)}/>
-                            </div>
+                            <p className="my-2">Status: {orderDetail.order_status}</p>
                         </section>
                     </main>
                     </>

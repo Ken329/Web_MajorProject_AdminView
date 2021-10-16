@@ -7,7 +7,7 @@ const navigation = [
     { name: 'Menu', href: '#', current: false },
     { name: 'QR Code', href: '#', current: false },
     { name: 'Tracking', href: '/Tracking', current: false },
-    { name: 'History', href: '#', current: false },
+    { name: 'History', href: '/History', current: false },
     { name: 'Statistic', href: '#', current: false },
 ]
 const userNavigation = [

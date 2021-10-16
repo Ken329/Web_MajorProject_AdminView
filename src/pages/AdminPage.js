@@ -75,6 +75,13 @@ function AdminPage() {
                     }
                 }
             })
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [] )
+    useEffect( () => {
+        const interval = setInterval(() => {
+            const id = cookies.get("user_id");
 
             Axios.post("https://eatsy-0329.herokuapp.com/getTableWithIdNDate", {
                 id: id
@@ -82,7 +89,6 @@ function AdminPage() {
             .then((res) => {
                 if(res.data.success){
                     const data = res.data.data;
-                    console.log(data)
                     var pendingCount = 0;
                     for(var i = 0; i < data.length; i++){
                         if(data[i].status === "pending"){
