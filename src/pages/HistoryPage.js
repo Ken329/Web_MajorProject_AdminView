@@ -63,7 +63,7 @@ function TracksPage() {
         })
     }
     function getTabledata(id){
-        Axios.post('updateTableStatus(e, index)/getTableWithId', {
+        Axios.post('https://eatsy-0329.herokuapp.com/getTableWithId', {
             id: id
         })
         .then((res) => {
@@ -81,7 +81,7 @@ function TracksPage() {
     function deleteOrderData(e, orderId){
         const id = cookies.get("user_id");
 
-        Axios.post("updateTableStatus(e, index)/deleteOrderData", {
+        Axios.post("https://eatsy-0329.herokuapp.com/deleteOrderData", {
             id: id,
             orderId: orderId
         })
@@ -96,7 +96,7 @@ function TracksPage() {
     function deleteTableData(e, tableId){
         const id = cookies.get("user_id");
 
-        Axios.post("updateTableStatus(e, index)/deleteTableData", {
+        Axios.post("https://eatsy-0329.herokuapp.com/deleteTableData", {
             id: id,
             tableId: tableId
         })
