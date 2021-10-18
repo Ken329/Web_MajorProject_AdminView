@@ -53,8 +53,7 @@ function AdminPage() {
                             pendingCount++;
                         }
                     }
-                    if(parseInt(document.getElementById("order_pending").innerHTML) !== 0 && 
-                    pendingCount > parseInt(document.getElementById("order_pending").innerHTML)){
+                    if(pendingCount > parseInt(document.getElementById("order_pending").innerHTML)){
                         var lastestOrder =  pendingCount - parseInt(document.getElementById("order_pending").innerHTML);
                         toast.info(lastestOrder + " new Order has been made by your customer", {
                             position: toast.POSITION.TOP_RIGHT,
@@ -95,8 +94,7 @@ function AdminPage() {
                             pendingCount++;
                         }
                     }
-                    if(parseInt(document.getElementById("table_pending").innerHTML) !== 0 && 
-                    pendingCount > parseInt(document.getElementById("table_pending").innerHTML)){
+                    if(pendingCount > parseInt(document.getElementById("table_pending").innerHTML)){
                         var lastestOrder =  pendingCount - parseInt(document.getElementById("table_pending").innerHTML);
                         toast.info(lastestOrder + " new table has been book by your customer", {
                             position: toast.POSITION.TOP_RIGHT,

@@ -6,6 +6,7 @@ import { ClimbingBoxLoader } from 'react-spinners';
 import Cookies from 'universal-cookie';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ViewBoards } from 'heroicons-react';
 
 const cookies = new Cookies();
 
@@ -132,8 +133,8 @@ function TracksPage() {
     }
     function updateTableStatus(e, index){
         const id = cookies.get("user_id");
-        const status = document.getElementById("status_"+index).value;
-       
+        const status = e.target.value;
+        
         Axios.put("https://eatsy-0329.herokuapp.com/updateTableStatus", {
             id: id,
             tableId: userTable[index].id,
@@ -289,9 +290,9 @@ function TracksPage() {
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(data.order_date.seconds * 1000).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">RM {data.order_amount}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                                    <a href={"/TrackingOrder?uid="+data.order_id} className="text-indigo-600 hover:text-indigo-900">
-                                                                        View
-                                                                    </a>
+                                                                        <a href={"/TrackingOrder?uid="+data.order_id} className="text-gray-600 hover:text-gray-900">
+                                                                            <ViewBoards className="w-5 h-5"/>
+                                                                        </a>
                                                                     </td>
                                                                 </tr>
                                                     })
@@ -410,7 +411,7 @@ function TracksPage() {
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.pax}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                                         <select 
-                                                                            id={"status_"+index}
+                                                                            onChange={e => updateTableStatus(e, index)}
                                                                             className={
                                                                                 data.status === "pending" 
                                                                                 ? "px-2 py-1 bg-yellow-100 text-yellow-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
@@ -430,13 +431,14 @@ function TracksPage() {
                                                                             new Date(data.date.seconds * 1000).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
                                                                         }
                                                                     </td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                                    <td></td>
+                                                                    {/* <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                                         <p 
                                                                             onClick={e => updateTableStatus(e, index)}
                                                                             className="text-indigo-600 cursor-pointer hover:text-indigo-900">
                                                                             Update
                                                                         </p>
-                                                                    </td>
+                                                                    </td> */}
                                                                 </tr>
                                                     })
                                                 }

@@ -52,6 +52,7 @@ function TracksPage() {
         })
         .then((res) => {
             if(res.data.success){
+                setUserOrder([])
                 const data = res.data.data;
                 for(var i = 0; i < data.length; i++){
                     setUserOrder(array => [...array, data[i]])
@@ -62,11 +63,12 @@ function TracksPage() {
         })
     }
     function getTabledata(id){
-        Axios.post('https://eatsy-0329.herokuapp.com/getTableWithId', {
+        Axios.post('updateTableStatus(e, index)/getTableWithId', {
             id: id
         })
         .then((res) => {
             if(res.data.success){
+                setUserTable([]);
                 const data = res.data.data;
                 for(var i = 0; i < data.length; i++){
                     setUserTable(array => [...array, data[i]])
@@ -76,11 +78,35 @@ function TracksPage() {
     }
 
     // delete data function
-    function deleteOrderData(e){
+    function deleteOrderData(e, orderId){
+        const id = cookies.get("user_id");
 
+        Axios.post("updateTableStatus(e, index)/deleteOrderData", {
+            id: id,
+            orderId: orderId
+        })
+        .then((res) => {
+            toast.success(res.data.data, {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 3000
+            });
+            getOrderData(id);
+        })
     }
-    function deleteTableData(e){
-        
+    function deleteTableData(e, tableId){
+        const id = cookies.get("user_id");
+
+        Axios.post("updateTableStatus(e, index)/deleteTableData", {
+            id: id,
+            tableId: tableId
+        })
+        .then((res) => {
+            toast.success(res.data.data, {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 3000
+            });
+            getOrderData(id);
+        })
     }
 
     return (
@@ -181,7 +207,9 @@ function TracksPage() {
                                                                         </a>
                                                                     </td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-600 cursor-pointer hover:text-gray-900">
-                                                                        <Trash className="w-5 h-5"/>
+                                                                        <Trash 
+                                                                            onClick={e => deleteOrderData(e, data.order_id)}
+                                                                            className="w-5 h-5"/>
                                                                     </td>
                                                                 </tr>
                                                     })
@@ -242,7 +270,9 @@ function TracksPage() {
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(data.date.seconds * 1000).toLocaleDateString()}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(data.date.seconds * 1000).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-600 cursor-pointer hover:text-gray-900">
-                                                                        <Trash className="w-5 h-5"/>
+                                                                        <Trash 
+                                                                            onClick={e => deleteTableData(e, data.id)}
+                                                                            className="w-5 h-5"/>
                                                                     </td>
                                                                 </tr>
                                                     })
