@@ -8,6 +8,9 @@ import SignUp from './pages/SignUp';
 // admin section
 import AdminPage from './pages/AdminPage';
 
+// menu section
+import MenuPage from './pages/MenuPage';
+
 // tracking section
 import TracksPage from './pages/TracksPage';
 import TrackingOrder from './pages/TrackingOrder';
@@ -31,6 +34,7 @@ function App() {
             <Route path="/Login" exact component = {Login}/>
             <Route path="/SignUp" exact component = {SignUp}/>
             <Route path="/Dashboard" exact component = {AdminPage}/>
+            <Route path="/MenuPage" exact component = {MenuPage}/>
             <Route path="/Tracking" exact component = {TracksPage}/>
             <Route path="/TrackingOrder" exact component = {TrackingOrder}/>
             <Route path="/History" exact component = {HistoryPage}/>
