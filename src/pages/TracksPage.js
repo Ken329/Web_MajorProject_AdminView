@@ -216,7 +216,7 @@ function TracksPage() {
                                 {
                                     trackingBtn === "Order" ?
                                     userOrder.length <= 0 ? (
-                                        <p className="w-full text-center text-gray-500 font-bold">No Tracking order</p>
+                                        <p className="w-full text-center text-gray-500 font-bold">No Tracking Order</p>
                                     ) : (
                                         <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                                             <table className="min-w-full divide-y divide-gray-200">
@@ -301,8 +301,8 @@ function TracksPage() {
                                             </table>
                                         </div>
                                     )
-                                    : userOrder.length <= 0 ? (
-                                        <p className="w-full text-center text-gray-500 font-bold">No Tracking order</p>
+                                    : userTable.length <= 0 ? (
+                                        <p className="w-full text-center text-gray-500 font-bold">No Tracking Table</p>
                                     ) : (
                                         <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                                             <p 

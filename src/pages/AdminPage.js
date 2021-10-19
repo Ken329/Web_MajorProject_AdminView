@@ -437,7 +437,7 @@ function AdminPage() {
                                 {
                                     userMenu.map((data, index) => {
                                         return <div 
-                                                key={data.item_name}
+                                                key={index}
                                                 className={"bg-white h-72 flex-col rounded-lg relative m-5 categories_"+data.food_categories}>
                                                     <img className="w-full h-3/5 rounded-t-lg" src={data.food_image} />
                                                     <p className="m-2">{data.food_name}</p>
