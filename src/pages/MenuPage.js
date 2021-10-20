@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Ban, Pencil, PlusCircle, Trash } from 'heroicons-react';
 import { Dialog, Transition } from '@headlessui/react'
 import { XIcon } from '@heroicons/react/outline'
+import "./scrollbar.css"
 
 const cookies = new Cookies();
 
@@ -20,6 +21,7 @@ function TracksPage() {
     const [userDetail, setUserDetail] = useState([]);
     const [menu, setMenu] = useState([]);
     const [menuId, setMenuId] = useState([]);
+    const [menuCategories, setMenuCategories] = useState([]);
 
     const [categoriesShown, setCategoriesShown] = useState([]);
     const [discountShown, setDiscountShown] = useState([]);
@@ -27,6 +29,8 @@ function TracksPage() {
 
     const [sideBar, setSideBar] = useState(false)
     const [sideBarTitle, setsideBarTitle] = useState("");
+    const [sideBarImg,  setSideBarImg] = useState([false, "No image found"]);
+    const [sideBarIndex, setSideBarIndex] = useState(0);
 
     useEffect( () => {
         const id = cookies.get("user_id")
@@ -71,6 +75,7 @@ function TracksPage() {
                 setDiscountShown(array => [...array, "yes"]);
                 setAvailableShown(array => [...array, "yes"]);
             }
+            menuCategoriesList(data);
             setLoading(false);
         })
     }
@@ -78,18 +83,12 @@ function TracksPage() {
     // returning list function
     function menuCategoriesList(data){
         var list = [];
-        var myList = [];
-        for(var i = 0; i < data.length; i++){
-            if(!list.includes(data[i].food_categories)){
-                list.push(data[i].food_categories);
-                myList.push(<option 
-                            key={data[i].food_categories} 
-                            value={data[i].food_categories}>
-                                {data[i].food_categories}
-                            </option>)
+        for(var i = 1; i < data.length; i+=2){
+            if(!list.includes(data[i + 1].food_categories)){
+                list.push(data[i + 1].food_categories);
             }
         }
-        return myList;
+        setMenuCategories(list);
     }
 
     // filtering function
@@ -151,7 +150,7 @@ function TracksPage() {
     // updating function
     function updateMenuDiscount(menuId, discount){
         const id = cookies.get("user_id")
-        Axios.put("http://localhost:4000/updateMenuDiscount", {
+        Axios.put("https://eatsy-0329.herokuapp.com/updateMenuDiscount", {
             id: id,
             menuId: menuId,
             discount: discount
@@ -168,7 +167,7 @@ function TracksPage() {
     }
     function updateMenuAvailable(menuId, available){
         const id = cookies.get("user_id")
-        Axios.put("http://localhost:4000/updateMenuAvailable", {
+        Axios.put("https://eatsy-0329.herokuapp.com/updateMenuAvailable", {
             id: id,
             menuId: menuId,
             available: available
@@ -182,6 +181,104 @@ function TracksPage() {
                 getMenuData(id);
             }
         })
+    }
+
+    // inserting function
+    function insertingNewMenu(){
+        var field = document.getElementsByClassName("new-field");
+        var data = [];
+        var check = true;
+        for(var myField of field){
+            if(myField.value === ""){
+                check = false;
+                break;
+            }
+            if(myField.value === "Create New..."){
+                data.push(document.getElementById("new_categories").value);
+            }else{
+                data.push(myField.value);
+            }
+        }
+        if(check){
+            if(checkImageExists(data[0])){
+                const id = cookies.get("user_id")
+                var myData = {
+                    food_image: data[0],
+                    food_name: data[1],
+                    food_price: data[2],
+                    food_categories: data[3],
+                    food_discount: data[4],
+                    food_available: data[5]
+                }
+                Axios.post("https://eatsy-0329.herokuapp.com/insertNewMenu", {
+                    id: id,
+                    menu: myData
+                })
+                .then((res) => {
+                    if(res.data.success){
+                        setSideBar(false);
+                        setSideBarImg([false, "No Image Found"])
+                        toast.success(res.data.data, {
+                            position: toast.POSITION.TOP_RIGHT,
+                            autoClose: 3000
+                        });
+                        getMenuData(id)
+                    }
+                })
+            }else{
+                toast.error("Image url not working, please check", {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 3000
+                });
+            }
+        }else{
+            toast.error("Do not leave any field empty", {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 3000
+            });
+        }
+    }
+
+    // personal used function
+    function checkIfImageExists(url) {
+        const img = new Image();
+    
+        img.src = url;
+        var list = [];
+    
+        if (img.complete) {
+            list.push(true);
+            list.push(url);
+            setSideBarImg(list);
+        } else {
+            img.onload = () => {
+                list.push(true);
+                list.push(url);
+                setSideBarImg(list);
+            };
+            
+            img.onerror = () => {
+                list.push(false);
+                list.push("Wrong image url");
+                setSideBarImg(list);
+            };
+        }
+    }
+    function checkImageExists(url) {
+        const img = new Image();
+        img.src = url;
+    
+        if (img.complete) {
+            return true;
+        } else {
+            img.onload = () => {
+                return true;
+            };
+            
+            img.onerror = () => {
+                return false;
+            };
+        }
     }
 
     return (
@@ -207,7 +304,10 @@ function TracksPage() {
                     </header>
                     <main className="flex-col relative overflow-hidden">
                     <Transition.Root show={sideBar} as={Fragment}>
-                        <Dialog as="div" className="fixed inset-0 overflow-hidden" onClose={setSideBar}>
+                        <Dialog as="div" className="fixed inset-0 overflow-hidden" onClose={() => {
+                            setSideBar(false);
+                            setSideBarImg([false, "No Image Found"])
+                        }}>
                             <div className="absolute inset-0 overflow-hidden">
                             <Transition.Child
                                 as={Fragment}
@@ -244,64 +344,200 @@ function TracksPage() {
                                         <button
                                         type="button"
                                         className="rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
-                                        onClick={() => setSideBar(false)}
+                                        onClick={() => {
+                                            setSideBar(false)
+                                            setSideBarImg([false, "No image found"])
+                                        }}
                                         >
                                         <span className="sr-only">Close panel</span>
                                         <XIcon className="h-6 w-6" aria-hidden="true" />
                                         </button>
                                     </div>
                                     </Transition.Child>
-                                    <div className="h-full flex flex-col py-6 bg-white shadow-xl overflow-y-scroll">
-                                    <div className="px-4 sm:px-6">
+                                    <div className="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
+                                    <div className="w-full py-3 bg-gray-200 rounded-b-2xl">
                                         <Dialog.Title className="text-lg font-medium text-gray-900 text-center">{sideBarTitle}</Dialog.Title>
                                     </div>
-                                    <div className="py-9 relative flex-1 px-4 overflow-hidden overflow-y-auto sm:px-6">
-                                        <p className="mx-auto w-10/12 py-2">Photo</p>
-                                        <div className="flex justify-center items-center">
-                                            <img className="h-20 w-20 rounded-full mx-3" src="../img/background.jpg"/>
-                                            <div className="mx-3 flex rounded-full shadow-sm">
-                                                <span className="inline-flex items-center px-3 py-1 rounded-l-full bg-gray-200 text-gray-500 text-sm">
-                                                    Image:
-                                                </span>
-                                                <input className="rounded-r-full px-3 outline-none bg-gray-100 text-sm" placeholder="http://"/>
+                                    <div className="pt-9 pb-3 relative flex-1 px-4 overflow-hidden overflow-y-auto no-scrollbar md:pt-6 sm:px-6 sm:pt-3">
+                                        {
+                                            sideBarTitle === "Create New menu" ?
+                                            <>
+                                            <p className="mx-auto w-10/12 py-2">Photo</p>
+                                            <div className="flex justify-center items-center">
+                                                {
+                                                    sideBarImg[0] ? <img className="h-20 w-20 rounded-full mx-3" src={sideBarImg[1]}/>
+                                                    : <div className="h-20 w-20 rounded-full mx-3 bg-gray-100 flex justify-center items-center">
+                                                        <p className="w-11/12 h-auto text-center text-sm py-1">
+                                                            {sideBarImg[1]}
+                                                        </p>
+                                                    </div>
+                                                }
+                                                <div className="mx-3 flex rounded-full shadow-sm">
+                                                    <span className="inline-flex items-center px-3 py-1 rounded-l-full bg-gray-200 text-gray-500 text-sm">
+                                                        Image:
+                                                    </span>
+                                                    <input 
+                                                    onChange={e => {
+                                                        checkIfImageExists(e.target.value)
+                                                    }}
+                                                    className="rounded-r-full px-3 outline-none bg-gray-100 text-sm new-field" 
+                                                    placeholder="http://"/>
+                                                </div>
                                             </div>
+                                            <div className="w-11/12 mx-auto">
+                                                <p className="py-2 ml-6 mt-3">Name</p>
+                                                <input 
+                                                className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm new-field" 
+                                                placeholder="Create food name"/>
+                                                <p className="py-2 ml-6 mt-3">Price</p>
+                                                <input 
+                                                className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm new-field" 
+                                                placeholder="Create food price"/>
+                                                <p className="py-2 ml-6 mt-3">Categories</p>
+                                                <select 
+                                                onChange={e => {
+                                                    if(e.target.value === "Create New..."){
+                                                        document.getElementById("new_categories").style.display = "flex"
+                                                    }else{
+                                                        document.getElementById("new_categories").style.display = "none"
+                                                    }
+                                                }}
+                                                className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm new-field" 
+                                                defaultValue="">
+                                                    <option value="" disabled={true}>Select one option below</option>
+                                                    { 
+                                                        menuCategories.map((data) => {
+                                                            return <option key={"new_"+data} value={data}>{data}</option>
+                                                        })
+                                                    }
+                                                    <option>Create New...</option>
+                                                </select>
+                                                <input 
+                                                id="new_categories"
+                                                className="w-full mt-2 rounded-full px-3 py-2 outline-none hidden 
+                                                bg-gray-100 text-sm" 
+                                                placeholder="Create new categories"/>
+                                                <p className="py-2 ml-6 mt-3">Discount</p>
+                                                <select 
+                                                className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm new-field" 
+                                                defaultValue="">
+                                                    <option value="" disabled={true}>Select one option below</option>
+                                                    <option value='yes'>Yes</option>
+                                                    <option value='no'>No</option>
+                                                </select>
+                                                <p className="py-2 ml-6 mt-3">Available</p>
+                                                <select 
+                                                className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm new-field" 
+                                                defaultValue="">
+                                                    <option value="" disabled={true}>Select one option below</option>
+                                                    <option value='yes'>Yes</option>
+                                                    <option value='no'>No</option>
+                                                </select>
+                                                <div className="flex justify-end mt-6">
+                                                    <button 
+                                                    onClick={e => insertingNewMenu()}
+                                                    className="w-auto px-3 py-2 bg-gray-100 rounded-full">
+                                                        Create
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            </>
+                                            : <>
+                                            <p className="mx-auto w-11/12 py-2">Food Image</p>
+                                            <div className="flex justify-center items-center">
+                                                {
+                                                    sideBarImg[0] ? <img className="h-20 w-20 rounded-full mx-3" src={sideBarImg[1]}/>
+                                                    : <div className="h-20 w-20 rounded-full mx-3 bg-gray-100 flex justify-center items-center">
+                                                        <p className="w-full h-auto text-center text-sm py-1">
+                                                            {sideBarImg[1]}
+                                                        </p>
+                                                    </div>
+                                                }
+                                                <div className="mx-3 flex rounded-full shadow-sm">
+                                                    <span className="inline-flex items-center px-3 py-1 rounded-l-full bg-gray-200 text-gray-500 text-sm">
+                                                        Image:
+                                                    </span>
+                                                    <input 
+                                                    onChange={e => {
+                                                        checkIfImageExists(e.target.value)
+                                                    }}
+                                                    className="rounded-r-full px-3 outline-none bg-gray-100 text-sm update-field" 
+                                                    placeholder="http://"
+                                                    defaultValue={
+                                                        menu.length !== 0
+                                                        ? menu[sideBarIndex].food_image
+                                                        : "" 
+                                                    }/>
+                                                </div>
+                                            </div>
+                                            <div className="w-11/12 mx-auto">
+                                                <p className="py-2 ml-6 mt-3">Food Name</p>
+                                                <input 
+                                                className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm update-field" 
+                                                placeholder="Update your food name"
+                                                defaultValue={
+                                                    menu.length !== 0
+                                                    ? menu[sideBarIndex].food_name
+                                                    : "" 
+                                                }/>
+                                                <p className="py-2 ml-6 mt-3">Food Price</p>
+                                                <input 
+                                                className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm update-field" 
+                                                placeholder="Update your food price"
+                                                defaultValue={
+                                                    menu.length !== 0
+                                                    ? menu[sideBarIndex].food_price
+                                                    : "" 
+                                                }/>
+                                                <p className="py-2 ml-6 mt-3">Food Categories</p>
+                                                <select 
+                                                className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm update-field" 
+                                                defaultValue={
+                                                    menu.length !== 0
+                                                    ? menu[sideBarIndex].food_categories
+                                                    : "" 
+                                                }>
+                                                    <option value="" disabled={true}>Select one option below</option>
+                                                    { 
+                                                        menuCategories.map((data) => {
+                                                            return <option key={"update_"+data} value={data}>{data}</option>
+                                                        })
+                                                    }
+                                                    <option>Create New...</option>
+                                                </select>
+                                                <p className="py-2 ml-6 mt-3">Food Discount</p>
+                                                <select 
+                                                className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm update-field" 
+                                                defaultValue={
+                                                    menu.length !== 0
+                                                    ? menu[sideBarIndex].food_discount
+                                                    : "" 
+                                                }>
+                                                    <option value="" disabled={true}>Select one option below</option>
+                                                    <option value='yes'>Yes</option>
+                                                    <option value='no'>No</option>
+                                                </select>
+                                                <p className="py-2 ml-6 mt-3">Food Available</p>
+                                                <select 
+                                                className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm update-field" 
+                                                defaultValue={
+                                                    menu.length !== 0
+                                                    ? menu[sideBarIndex].food_available
+                                                    : "" 
+                                                }>
+                                                    <option value="" disabled={true}>Select one option below</option>
+                                                    <option value='yes'>Yes</option>
+                                                    <option value='no'>No</option>
+                                                </select>
+                                                <div className="flex justify-end mt-6">
+                                                    <button className="w-auto px-3 py-2 bg-gray-100 rounded-full">
+                                                        Update
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            </>
+                                        }
                                         </div>
-                                        <div className="w-11/12 mx-auto">
-                                            <p className="py-2 ml-6 mt-3">Name</p>
-                                            <input 
-                                            className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm" 
-                                            placeholder="Create a food name"/>
-                                            <p className="py-2 ml-6 mt-3">Price</p>
-                                            <input 
-                                            className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm" 
-                                            placeholder="Create a food price"/>
-                                            <p className="py-2 ml-6 mt-3">Categories</p>
-                                            <select 
-                                            className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm" 
-                                            defaultValue="">
-                                                <option value="">Select one option below</option>
-                                                <option value='yes'>Yes</option>
-                                                <option value='no'>No</option>
-                                            </select>
-                                            <p className="py-2 ml-6 mt-3">Discount</p>
-                                            <select 
-                                            className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm" 
-                                            defaultValue="">
-                                                <option value="">Select one option below</option>
-                                                <option value='yes'>Yes</option>
-                                                <option value='no'>No</option>
-                                            </select>
-                                            <p className="py-2 ml-6 mt-3">Available</p>
-                                            <select 
-                                            className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm" 
-                                            defaultValue="">
-                                                <option value="">Select one option below</option>
-                                                <option value='yes'>Yes</option>
-                                                <option value='no'>No</option>
-                                            </select>
-                                        </div>
-                                        
-                                    </div>
                                     </div>
                                 </div>
                                 </Transition.Child>
@@ -329,7 +565,11 @@ function TracksPage() {
                                 }}
                                 className="rounded-r-full px-3 outline-none">
                                     <option value="all">All</option>
-                                    { menuCategoriesList(menu) }
+                                    { 
+                                        menuCategories.map((data) => {
+                                            return <option key={data} value={data}>{data}</option>
+                                        })
+                                    }
                                 </select>
                             </div>
                             <div className="ml-4 flex rounded-full shadow-sm">
@@ -361,7 +601,11 @@ function TracksPage() {
                                 </select>
                             </div>
                         </section>
-                        <section className="w-4/5 mx-auto grid grid-cols-2 py-6 md:grid-cols-3 lg:grid-cols-4" >
+                        {
+                            menu.length === 0 ?
+                            <p className="text-lg text-gray-500 w-full text-center py-6">No menu has been found</p>
+                            : 
+                            <section className="w-4/5 mx-auto grid grid-cols-2 py-6 md:grid-cols-3 lg:grid-cols-4" >
                             {
                                 menu.map((data, index) => {
                                     return categoriesShown[index] === "yes" &&
@@ -369,8 +613,16 @@ function TracksPage() {
                                             availableShown[index] === "yes"?
                                     <div key={menuId[index]} className="h-auto relative bg-white flex-col rounded-xl mx-4 my-3">
                                     <div className="absolute w-full top-0 flex justify-end">
-                                        <Pencil className="w-5 h-5 my-2 mx-1 cursor-pointer text-gray-700 hover:text-gray-900"/>
-                                        <Trash className="w-5 h-5 my-2 mx-1 cursor-pointer text-gray-700 hover:text-gray-900"/>
+                                        <Pencil 
+                                        onClick={e => {
+                                            setSideBar(true)
+                                            setsideBarTitle("Update Menu")
+                                            setSideBarIndex(index)
+                                            setSideBarImg([true, menu[index].food_image])
+                                        }}
+                                        className="w-5 h-5 my-2 mx-1 cursor-pointer text-gray-700 hover:text-gray-900"/>
+                                        <Trash 
+                                        className="w-5 h-5 my-2 mx-1 cursor-pointer text-gray-700 hover:text-gray-900"/>
                                     </div>
                                     <img className="w-28 h-28 mx-auto my-3 rounded-full" src={data.food_image}/>
                                     <p className="w-full text-center my-2 font-bold">{data.food_name}</p>
@@ -409,10 +661,11 @@ function TracksPage() {
                                         }
                                     </div>
                                 </div>
-                                : <></>
+                                : <div key={menuId[index]} style={{display: "none"}}></div>
                                 })
                             }
-                        </section>
+                            </section>
+                        }
                     </main>
                     </>
                 )
