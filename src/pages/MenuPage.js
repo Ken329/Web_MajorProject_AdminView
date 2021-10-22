@@ -182,6 +182,79 @@ function TracksPage() {
             }
         })
     }
+    function updateMenuDetail(){
+        var field = document.getElementsByClassName("update-field");
+        var data = [];
+        var check = true;
+        for(var myField of field){
+            if(myField.value === ""){
+                check = false;
+                break;
+            }
+            if(myField.value === "Create New..."){
+                data.push(document.getElementById("update_categories").value);
+            }else{
+                data.push(myField.value);
+            }
+        }
+        var index = menu.findIndex(x => 
+            x.food_image === data[0] &&
+            x.food_name === data[1] &&
+            x.food_price === data[2] &&
+            x.food_categories === data[3] &&
+            x.food_discount === data[4] &&
+            x.food_available === data[5] 
+        );
+        if(index !== -1){
+            toast.info("No changes has been made", {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 3000
+            });
+            setSideBar(false);
+            setSideBarImg([false, "No Image Found"])
+            return;
+        }
+        if(check){
+            if(checkImageExists(data[0])){
+                const id = cookies.get("user_id")
+                var myData = {
+                    food_image: data[0],
+                    food_name: data[1],
+                    food_price: data[2],
+                    food_categories: data[3],
+                    food_discount: data[4],
+                    food_available: data[5]
+                }
+                Axios.put("https://eatsy-0329.herokuapp.com/updateMenuDetail", {
+                    id: id,
+                    menuId: menuId[sideBarIndex],
+                    detail: myData
+                })
+                .then((res) => {
+                    if(res.data.success){
+                        setSideBar(false);
+                        setSideBarImg([false, "No Image Found"])
+                        setSideBarIndex(0);
+                        toast.success(res.data.data, {
+                            position: toast.POSITION.TOP_RIGHT,
+                            autoClose: 3000
+                        });
+                        getMenuData(id)
+                    }
+                })
+            }else{
+                toast.error("Image url not working, please check", {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 3000
+                });
+            }
+        }else{
+            toast.error("Do not leave any field empty", {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 3000
+            });
+        }
+    }
 
     // inserting function
     function insertingNewMenu(){
@@ -237,6 +310,27 @@ function TracksPage() {
                 autoClose: 3000
             });
         }
+    }
+
+    // deleting function
+    function deleteMenu(menuId){
+        const id = cookies.get("user_id");
+        Axios.post("https://eatsy-0329.herokuapp.com/deleteMenuDetail", {
+            id: id,
+            menuId: menuId
+        })
+        .then((res) => {
+            if(res.data.success){
+                setSideBar(false);
+                setSideBarImg([false, "No Image Found"])
+                setSideBarIndex(0);
+                toast.success(res.data.data, {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 3000
+                });
+                getMenuData(id)
+            }
+        })
     }
 
     // personal used function
@@ -491,6 +585,13 @@ function TracksPage() {
                                                 }/>
                                                 <p className="py-2 ml-6 mt-3">Food Categories</p>
                                                 <select 
+                                                onChange={e => {
+                                                    if(e.target.value === "Create New..."){
+                                                        document.getElementById("update_categories").style.display = "flex"
+                                                    }else{
+                                                        document.getElementById("update_categories").style.display = "none"
+                                                    }
+                                                }}
                                                 className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm update-field" 
                                                 defaultValue={
                                                     menu.length !== 0
@@ -505,6 +606,11 @@ function TracksPage() {
                                                     }
                                                     <option>Create New...</option>
                                                 </select>
+                                                <input 
+                                                id="update_categories"
+                                                className="w-full mt-2 rounded-full px-3 py-2 outline-none hidden 
+                                                bg-gray-100 text-sm" 
+                                                placeholder="Create new categories"/>
                                                 <p className="py-2 ml-6 mt-3">Food Discount</p>
                                                 <select 
                                                 className="w-full rounded-full px-3 py-2 outline-none bg-gray-100 text-sm update-field" 
@@ -530,7 +636,9 @@ function TracksPage() {
                                                     <option value='no'>No</option>
                                                 </select>
                                                 <div className="flex justify-end mt-6">
-                                                    <button className="w-auto px-3 py-2 bg-gray-100 rounded-full">
+                                                    <button 
+                                                    onClick={e => updateMenuDetail()}
+                                                    className="w-auto px-3 py-2 bg-gray-100 rounded-full">
                                                         Update
                                                     </button>
                                                 </div>
@@ -622,6 +730,7 @@ function TracksPage() {
                                         }}
                                         className="w-5 h-5 my-2 mx-1 cursor-pointer text-gray-700 hover:text-gray-900"/>
                                         <Trash 
+                                        onClick={e => deleteMenu(menuId[index])}
                                         className="w-5 h-5 my-2 mx-1 cursor-pointer text-gray-700 hover:text-gray-900"/>
                                     </div>
                                     <img className="w-28 h-28 mx-auto my-3 rounded-full" src={data.food_image}/>

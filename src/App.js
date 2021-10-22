@@ -11,6 +11,9 @@ import AdminPage from './pages/AdminPage';
 // menu section
 import MenuPage from './pages/MenuPage';
 
+// qr section
+import QrPage from './pages/Qrpage';
+
 // tracking section
 import TracksPage from './pages/TracksPage';
 import TrackingOrder from './pages/TrackingOrder';
@@ -35,9 +38,11 @@ function App() {
             <Route path="/SignUp" exact component = {SignUp}/>
             <Route path="/Dashboard" exact component = {AdminPage}/>
             <Route path="/MenuPage" exact component = {MenuPage}/>
+            <Route path="/QrPage" exact component = {QrPage}/>
             <Route path="/Tracking" exact component = {TracksPage}/>
             <Route path="/TrackingOrder" exact component = {TrackingOrder}/>
             <Route path="/History" exact component = {HistoryPage}/>
+
           </Switch>
       </Router>
     </>
