@@ -711,7 +711,7 @@ function TracksPage() {
                         </section>
                         {
                             menu.length === 0 ?
-                            <p className="text-lg text-gray-500 w-full text-center py-6">No menu has been found</p>
+                            <p className="text-gray-700 w-full text-center py-6 font-bold">No menu has been found</p>
                             : 
                             <section className="w-4/5 mx-auto grid grid-cols-2 py-6 md:grid-cols-3 lg:grid-cols-4" >
                             {

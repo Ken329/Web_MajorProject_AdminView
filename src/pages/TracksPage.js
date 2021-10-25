@@ -6,7 +6,7 @@ import { ClimbingBoxLoader } from 'react-spinners';
 import Cookies from 'universal-cookie';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ViewBoards } from 'heroicons-react';
+import { PlusCircle, ViewBoards } from 'heroicons-react';
 
 const cookies = new Cookies();
 
@@ -216,7 +216,14 @@ function TracksPage() {
                                 {
                                     trackingBtn === "Order" ?
                                     userOrder.length <= 0 ? (
-                                        <p className="w-full text-center text-gray-500 font-bold">No Tracking Order</p>
+                                        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 flex justify-center items-center">
+                                            <a
+                                            href="/Dashboard"
+                                            className="border-4 border-dashed border-gray-200 rounded-lg p-10 cursor-pointer hover:text-gray-900">
+                                                <PlusCircle className="mx-auto my-2 text-gray-700"/>
+                                                <p className="text-gray-700">Create new order from here</p>
+                                            </a>
+                                        </div>
                                     ) : (
                                         <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                                             <table className="min-w-full divide-y divide-gray-200">
@@ -302,7 +309,7 @@ function TracksPage() {
                                         </div>
                                     )
                                     : userTable.length <= 0 ? (
-                                        <p className="w-full text-center text-gray-500 font-bold">No Tracking Table</p>
+                                        <p className="w-full text-center text-gray-700 font-bold">No Tracking Table</p>
                                     ) : (
                                         <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                                             <p 

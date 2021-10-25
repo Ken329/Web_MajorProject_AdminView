@@ -3,7 +3,7 @@ import Axios from 'axios'
 import { useHistory } from 'react-router-dom';
 import Header from '../components/Header'
 import { MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/outline'
-import { PlusCircle } from 'heroicons-react';
+import { PlusCircle, UserAdd } from 'heroicons-react';
 import { ClimbingBoxLoader } from 'react-spinners';
 import Cookies from 'universal-cookie';
 import { ToastContainer, toast } from 'react-toastify';
@@ -53,23 +53,25 @@ function AdminPage() {
                             pendingCount++;
                         }
                     }
-                    if(pendingCount > parseInt(document.getElementById("order_pending").innerHTML)){
-                        var lastestOrder =  pendingCount - parseInt(document.getElementById("order_pending").innerHTML);
-                        toast.info(lastestOrder + " new Order has been made by your customer", {
-                            position: toast.POSITION.TOP_RIGHT,
-                            autoClose: 3000
-                        });
-                    }
-                    setPendingOrder([]);
-                    setPrepareOrder([]);
-                    setDoneOrder([]);
-                    for(var i = 0; i < data.length; i++){
-                        if(data[i].order_status === "pending"){
-                            setPendingOrder(array => [...array, data[i]]);
-                        }else if(data[i].order_status === "prepare"){
-                            setPrepareOrder(array => [...array, data[i]]);
-                        }else if(data[i].order_status === "done"){
-                            setDoneOrder(array => [...array, data[i]]);
+                    if(document.getElementById("order_pending") !== null){
+                        if(pendingCount > parseInt(document.getElementById("order_pending").innerHTML)){
+                            var lastestOrder =  pendingCount - parseInt(document.getElementById("order_pending").innerHTML);
+                            toast.info(lastestOrder + " new Order has been made by your customer", {
+                                position: toast.POSITION.TOP_RIGHT,
+                                autoClose: 3000
+                            });
+                        }
+                        setPendingOrder([]);
+                        setPrepareOrder([]);
+                        setDoneOrder([]);
+                        for(var i = 0; i < data.length; i++){
+                            if(data[i].order_status === "pending"){
+                                setPendingOrder(array => [...array, data[i]]);
+                            }else if(data[i].order_status === "prepare"){
+                                setPrepareOrder(array => [...array, data[i]]);
+                            }else if(data[i].order_status === "done"){
+                                setDoneOrder(array => [...array, data[i]]);
+                            }
                         }
                     }
                 }
@@ -94,20 +96,24 @@ function AdminPage() {
                             pendingCount++;
                         }
                     }
-                    if(pendingCount > parseInt(document.getElementById("table_pending").innerHTML)){
-                        var lastestOrder =  pendingCount - parseInt(document.getElementById("table_pending").innerHTML);
-                        toast.info(lastestOrder + " new table has been book by your customer", {
-                            position: toast.POSITION.TOP_RIGHT,
-                            autoClose: 3000
-                        });
-                    }
-                    setPendingTable([]);
-                    setApprovedTable([]);
-                    for(var i = 0; i < data.length; i++){
-                        if(data[i].status === "pending"){
-                            setPendingTable(array => [...array, data[i]]);
-                        }else if(data[i].status === "approved"){
-                            setApprovedTable(array => [...array, data[i]]);
+                    if(document.getElementById("table_pending") !== null){
+                        if(document.getElementById("table_pending") !== null){
+                            if(pendingCount > parseInt(document.getElementById("table_pending").innerHTML)){
+                                var lastestOrder =  pendingCount - parseInt(document.getElementById("table_pending").innerHTML);
+                                toast.info(lastestOrder + " new table has been book by your customer", {
+                                    position: toast.POSITION.TOP_RIGHT,
+                                    autoClose: 3000
+                                });
+                            }
+                            setPendingTable([]);
+                            setApprovedTable([]);
+                            for(var i = 0; i < data.length; i++){
+                                if(data[i].status === "pending"){
+                                    setPendingTable(array => [...array, data[i]]);
+                                }else if(data[i].status === "approved"){
+                                    setApprovedTable(array => [...array, data[i]]);
+                                }
+                            }
                         }
                     }
                 }
@@ -395,148 +401,160 @@ function AdminPage() {
                         </div>
                     </header>
                     <main className="flex relative overflow-hidden">
-                        <div className="absolute left-1/3 flex">
-                            <div className="cursor-pointer flex-col shadow-lg ml-3 px-3 
-                            py-2 rounded-b-lg relative -top-14 hover:top-0 z-20 bg-gray-100">
-                                <h5 className="w-full text-center">Track Order</h5>
-                                <div className="flex">
-                                    <div className="mx-2 flex-col">
-                                        <p id="order_pending" className="w-full text-center">{pendingOrder.length}</p>
-                                        <p>Pending</p>
+                        {
+                            userMenu.length === 0 
+                            ? <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 flex justify-center items-center">
+                                <a
+                                href="/MenuPage"
+                                className="border-4 border-dashed border-gray-200 rounded-lg p-10 cursor-pointer hover:text-gray-900">
+                                    <PlusCircle className="mx-auto my-2 text-gray-700"/>
+                                    <p className="text-gray-700">Create new menu from here</p>
+                                </a>
+                            </div>
+                            :<>
+                            <div className="absolute left-1/3 flex">
+                                <div className="cursor-pointer flex-col shadow-lg ml-3 px-3 
+                                py-2 rounded-b-lg relative -top-14 hover:top-0 z-20 bg-gray-100">
+                                    <h5 className="w-full text-center">Track Order</h5>
+                                    <div className="flex">
+                                        <div className="mx-2 flex-col">
+                                            <p id="order_pending" className="w-full text-center">{pendingOrder.length}</p>
+                                            <p>Pending</p>
+                                        </div>
+                                        <div className="flex-col mx-2">
+                                            <p className="w-full text-center">{prepareOrder.length}</p>
+                                            <p>Working</p>
+                                        </div>
+                                        <div className="flex-col mx-2">
+                                            <p className="w-full text-center">{doneOrder.length}</p>
+                                            <p>Done</p>
+                                        </div>
                                     </div>
-                                    <div className="flex-col mx-2">
-                                        <p className="w-full text-center">{prepareOrder.length}</p>
-                                        <p>Working</p>
-                                    </div>
-                                    <div className="flex-col mx-2">
-                                        <p className="w-full text-center">{doneOrder.length}</p>
-                                        <p>Done</p>
+                                </div>
+                                <div className="cursor-pointer flex-col shadow-lg ml-3 px-3 
+                                py-2 rounded-b-lg relative -top-14 hover:top-0 z-20 bg-gray-100">
+                                    <h5 className="w-full text-center">Book Table</h5>
+                                    <div className="flex">
+                                        <div className="mx-2 flex-col">
+                                            <p id="table_pending" className="w-full text-center">{pendingTable.length}</p>
+                                            <p>Pending</p>
+                                        </div>
+                                        <div className="flex-col mx-2">
+                                            <p className="w-full text-center">{approvedTable.length}</p>
+                                            <p>Approved</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="cursor-pointer flex-col shadow-lg ml-3 px-3 
-                            py-2 rounded-b-lg relative -top-14 hover:top-0 z-20 bg-gray-100">
-                                <h5 className="w-full text-center">Book Table</h5>
-                                <div className="flex">
-                                    <div className="mx-2 flex-col">
-                                        <p id="table_pending" className="w-full text-center">{pendingTable.length}</p>
-                                        <p>Pending</p>
-                                    </div>
-                                    <div className="flex-col mx-2">
-                                        <p className="w-full text-center">{approvedTable.length}</p>
-                                        <p>Approved</p>
-                                    </div>
+                            <div className="max-w-6xl w-3/4 flex-col py-6 sm:px-6 lg:px-8">
+                                <div className="w-full py-4 flex flex-wrap">
+                                    {  insertCategories(menuCategories) }
                                 </div>
-                            </div>
-                        </div>
-                        <div className="max-w-6xl w-3/4 flex-col py-6 sm:px-6 lg:px-8">
-                            <div className="w-full py-4 flex flex-wrap">
-                                {  insertCategories(menuCategories) }
-                            </div>
-                            <div className="w-full grid grid-cols-2 py-6 md:grid-cols-3 lg:grid-cols-4">
-                                {
-                                    userMenu.map((data, index) => {
-                                        return <div 
-                                                key={index}
-                                                className={"bg-white h-72 flex-col rounded-lg relative m-5 categories_"+data.food_categories}>
-                                                    <img className="w-full h-3/5 rounded-t-lg" src={data.food_image} />
-                                                    <p className="m-2">{data.food_name}</p>
-                                                    <p className="m-2">RM {data.food_price}</p>
-                                                    <PlusCircle 
-                                                        onClick={e => addToCart(menuId[index], data)}
-                                                        className="w-6 h-6 cursor-pointer absolute bottom-2 right-2"/>
-                                                    {
-                                                        data.food_discount == "yes" ? (
-                                                            <div className="bg-red-600 w-auto absolute top-2 right-2 rounded-lg px-2 opacity-80">
-                                                                - $2 Off
-                                                            </div>
-                                                        ) : (
-                                                            <></>
-                                                        )
-                                                    }
-                                                    {
-                                                        data.food_available === "no" ? (
-                                                            <div className="w-full h-full absolute top-0 opacity-50 bg-gray-100 z-10 rounded-lg flex justify-center items-center">
-                                                                <p className="opacity-100">Not Available</p>
-                                                            </div>
-                                                        ) : (
-                                                            <></>
-                                                        )
-                                                    }
-                                                </div>
-                                    })
-                                }
-                            </div>
-                        </div>
-                        <div className="bg-white w-1/4 h-full m-3 rounded-md">
-                            <div className="w-full flex justify-center items-center">
-                                <button 
-                                    onClick={e => {
-                                        setmethod("take-away")
-                                    }}
-                                    className="bg-gray-100 px-4 py-2 rounded-lg m-2 hover:bg-gray-200 focus:bg-gray-300 checkout-btn">
-                                        Take Away
-                                </button>
-                                <button 
-                                    onClick={e => {
-                                        document.getElementById("div-table").style.display = "flex";
-                                        setmethod("dine-in")
-                                    }}
-                                    className="bg-gray-100 px-4 py-2 rounded-lg m-2 hover:bg-gray-200 focus:bg-gray-300 checkout-btn">
-                                        Dine In
-                                </button>
-                            </div>
-                            <div id="div-table" className="w-full hidden justify-center py-1">
-                                <input 
-                                    id="table_no"
-                                    className="w-4/5 h-auto border-gray-400 border-2 px-2 py-1 rounded-md" 
-                                    placeholder="Table No"/>
-                            </div>
-                            <div className="flex-col p-3 justify-center">
-                                {
-                                    cart.length === 0 ? (
-                                        <p className="w-full text-center my-3">Empty Cart</p>
-                                    ) : (
-                                        cart.map((data, index) => {
-                                            return <div key={data.name} className="flex my-2 items-center">
-                                                        <img className="rounded-full w-12 h-12" src={data.image}/>
-                                                        <div className="flex-col w-4/5">
-                                                            <p className="text-center my-2">{data.name}</p>
-                                                            <div className="grid grid-cols-1 my-2 lg:grid-cols-2 ">
-                                                                <div className="flex justify-center items-center">
-                                                                    <MinusCircleIcon 
-                                                                        onClick={e => alteringCart(index,  "minus")}
-                                                                        className="w-5 h-5 mx-2 cursor-pointer"/>
-                                                                    <p>{data.quantity}</p>
-                                                                    <PlusCircleIcon 
-                                                                        onClick={e => alteringCart(index,  "plus")}
-                                                                        className="w-5 h-5 mx-2 cursor-pointer"/>
+                                <div className="w-full grid grid-cols-2 py-6 md:grid-cols-3 lg:grid-cols-4">
+                                    {
+                                        userMenu.map((data, index) => {
+                                            return <div 
+                                                    key={index}
+                                                    className={"bg-white h-72 flex-col rounded-lg relative m-5 categories_"+data.food_categories}>
+                                                        <img className="w-full h-3/5 rounded-t-lg" src={data.food_image} />
+                                                        <p className="m-2">{data.food_name}</p>
+                                                        <p className="m-2">RM {data.food_price}</p>
+                                                        <PlusCircle 
+                                                            onClick={e => addToCart(menuId[index], data)}
+                                                            className="w-6 h-6 cursor-pointer absolute bottom-2 right-2"/>
+                                                        {
+                                                            data.food_discount == "yes" ? (
+                                                                <div className="bg-red-600 w-auto absolute top-2 right-2 rounded-lg px-2 opacity-80">
+                                                                    - $2 Off
                                                                 </div>
-                                                                <p className="text-center">RM {data.price}</p>
-                                                            </div>
-                                                        </div>
+                                                            ) : (
+                                                                <></>
+                                                            )
+                                                        }
+                                                        {
+                                                            data.food_available === "no" ? (
+                                                                <div className="w-full h-full absolute top-0 opacity-50 bg-gray-100 z-10 rounded-lg flex justify-center items-center">
+                                                                    <p className="opacity-100">Not Available</p>
+                                                                </div>
+                                                            ) : (
+                                                                <></>
+                                                            )
+                                                        }
                                                     </div>
                                         })
-                                    )
-                                }
-                                <div className="w-full flex-col">
-                                    <p className="text-right px-2">Total: RM{total}</p>
-                                    <p className="text-right px-2">SST 6%: RM{(parseFloat(total) * 0.06).toFixed(2)}</p>
-                                    <p className="text-right px-2">Total + SST: RM{(parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2)}</p>
-                                    <button 
-                                        onClick={e => proceedToCheckout(e)}
-                                        className="w-full py-3 mt-3 cursor-pointer rounded-lg bg-gray-700 text-white hover:bg-gray-800">
-                                            Proceeed to checkout
-                                    </button>
+                                    }
                                 </div>
                             </div>
-                        </div>
+                            <div className="bg-white w-1/4 h-full m-3 rounded-md">
+                                <div className="w-full flex justify-center items-center">
+                                    <button 
+                                        onClick={e => {
+                                            setmethod("take-away")
+                                        }}
+                                        className="bg-gray-100 px-4 py-2 rounded-lg m-2 hover:bg-gray-200 focus:bg-gray-300 checkout-btn">
+                                            Take Away
+                                    </button>
+                                    <button 
+                                        onClick={e => {
+                                            document.getElementById("div-table").style.display = "flex";
+                                            setmethod("dine-in")
+                                        }}
+                                        className="bg-gray-100 px-4 py-2 rounded-lg m-2 hover:bg-gray-200 focus:bg-gray-300 checkout-btn">
+                                            Dine In
+                                    </button>
+                                </div>
+                                <div id="div-table" className="w-full hidden justify-center py-1">
+                                    <input 
+                                        id="table_no"
+                                        className="w-4/5 h-auto border-gray-400 border-2 px-2 py-1 rounded-md" 
+                                        placeholder="Table No"/>
+                                </div>
+                                <div className="flex-col p-3 justify-center">
+                                    {
+                                        cart.length === 0 ? (
+                                            <p className="w-full text-center my-3">Empty Cart</p>
+                                        ) : (
+                                            cart.map((data, index) => {
+                                                return <div key={data.name} className="flex my-2 items-center">
+                                                            <img className="rounded-full w-12 h-12" src={data.image}/>
+                                                            <div className="flex-col w-4/5">
+                                                                <p className="text-center my-2">{data.name}</p>
+                                                                <div className="grid grid-cols-1 my-2 lg:grid-cols-2 ">
+                                                                    <div className="flex justify-center items-center">
+                                                                        <MinusCircleIcon 
+                                                                            onClick={e => alteringCart(index,  "minus")}
+                                                                            className="w-5 h-5 mx-2 cursor-pointer"/>
+                                                                        <p>{data.quantity}</p>
+                                                                        <PlusCircleIcon 
+                                                                            onClick={e => alteringCart(index,  "plus")}
+                                                                            className="w-5 h-5 mx-2 cursor-pointer"/>
+                                                                    </div>
+                                                                    <p className="text-center">RM {data.price}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                            })
+                                        )
+                                    }
+                                    <div className="w-full flex-col">
+                                        <p className="text-right px-2">Total: RM{total}</p>
+                                        <p className="text-right px-2">SST 6%: RM{(parseFloat(total) * 0.06).toFixed(2)}</p>
+                                        <p className="text-right px-2">Total + SST: RM{(parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2)}</p>
+                                        <button 
+                                            onClick={e => proceedToCheckout(e)}
+                                            className="w-full py-3 mt-3 cursor-pointer rounded-lg bg-gray-700 text-white hover:bg-gray-800">
+                                                Proceeed to checkout
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </>
+                        }
                     </main>
                     </>
                 )
             }
         </div>
     )
-    
 }
 export default AdminPage

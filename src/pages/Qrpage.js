@@ -368,7 +368,7 @@ function TracksPage() {
                             <h3 className="w-full py-4 px-6 mx-auto font-bold">Table</h3>
                             {
                                 generateData.length === 0
-                                ? <h3 className="w-full text-center text-gray-600 font-bold">No generated table found</h3>
+                                ? <h3 className="w-full text-center text-gray-700 font-bold">No generated table found</h3>
                                 : <section className="w-full mx-auto grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                                     {
                                         generateData.map((data, index) => {

@@ -21,6 +21,12 @@ import TrackingOrder from './pages/TrackingOrder';
 // history section
 import HistoryPage from './pages/HistoryPage';
 
+// transaction section
+import TransactionPage from './pages/TransactionPage';
+
+// profile section
+import Profile from './pages/Profile';
+
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import './App.css';
@@ -42,7 +48,8 @@ function App() {
             <Route path="/Tracking" exact component = {TracksPage}/>
             <Route path="/TrackingOrder" exact component = {TrackingOrder}/>
             <Route path="/History" exact component = {HistoryPage}/>
-
+            <Route path="/Transaction" exact component = {TransactionPage}/>
+            <Route path="/Profile" exact component = {Profile}/>
           </Switch>
       </Router>
     </>

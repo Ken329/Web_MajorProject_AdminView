@@ -1,6 +1,9 @@
+import Cookies from 'universal-cookie';
 import { Fragment, Component } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
+
+const cookies = new Cookies();
 
 const navigation = [
     { name: 'Dashboard', href: '/Dashboard', current: false },
@@ -8,12 +11,12 @@ const navigation = [
     { name: 'QR Code', href: '/QrPage', current: false },
     { name: 'Tracking', href: '/Tracking', current: false },
     { name: 'History', href: '/History', current: false },
-    { name: 'Statistic', href: '#', current: false },
+    { name: 'Transaction', href: '/Transaction', current: false },
 ]
 const userNavigation = [
-    { name: 'Your Profile', href: '#' },
+    { name: 'Your Profile', href: '/Profile' },
     { name: 'User Credit', href: '#' },
-    { name: 'Sign out', href: '#' },
+    { name: 'Sign Out', href: '#' },
 ]
   
 function classNames(...classes) {
@@ -32,7 +35,14 @@ function getUserIcon(gender){
 }
 
 function updateSection(section){
-    navigation[section].current = true;
+    if(section >= 0){
+        navigation[section].current = true;
+    }
+}
+
+function signOut(e){
+    cookies.remove("user_id", {path: "/"});
+    window.location.reload();
 }
 
 class Header extends Component{
@@ -47,13 +57,13 @@ class Header extends Component{
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     <div className="flex items-center">
-                    <div className="flex-shrink-0">
+                    <a href="/Dashboard" className="flex-shrink-0">
                         <img
                         className="h-8 w-8"
                         src="../img/logo2.png"
                         alt="Workflow"
                         />
-                    </div>
+                    </a>
                     <div className="hidden md:block">
                         <div className="ml-10 flex items-baseline space-x-4">
                         {navigation.map((item) => (
@@ -105,14 +115,25 @@ class Header extends Component{
                             {userNavigation.map((item) => (
                                 <Menu.Item key={item.name}>
                                 {({ active }) => (
-                                    <a
-                                    href={item.href}
-                                    className={classNames(
-                                        active ? 'bg-gray-100' : '',
-                                        'block px-4 py-2 text-sm text-gray-700'
-                                    )}
-                                    >
-                                    {item.name}
+                                    item.name === "Sign Out"
+                                    ? <a
+                                        href={item.href}
+                                        onClick={e => signOut(e)}
+                                        className={classNames(
+                                            active ? 'bg-gray-100' : '',
+                                            'block px-4 py-2 text-sm text-gray-700'
+                                        )}
+                                        >
+                                        {item.name}
+                                    </a>
+                                    : <a
+                                        href={item.href}
+                                        className={classNames(
+                                            active ? 'bg-gray-100' : '',
+                                            'block px-4 py-2 text-sm text-gray-700'
+                                        )}
+                                        >
+                                        {item.name}
                                     </a>
                                 )}
                                 </Menu.Item>
@@ -170,12 +191,21 @@ class Header extends Component{
                     </div>
                     <div className="mt-3 px-2 space-y-1">
                     {userNavigation.map((item) => (
-                        <a
-                        key={item.name}
-                        href={item.href}
-                        className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
-                        >
-                        {item.name}
+                        item.name === "Sign Out"
+                        ?<a
+                            onClick={e => signOut()}
+                            key={item.name}
+                            href={item.href}
+                            className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                            >
+                            {item.name}
+                        </a>
+                        :<a
+                            key={item.name}
+                            href={item.href}
+                            className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
+                            >
+                            {item.name}
                         </a>
                     ))}
                     </div>
