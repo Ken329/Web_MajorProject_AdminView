@@ -47,7 +47,7 @@ function TracksPage() {
 
     // getting food data
     function getAllFood(id){
-        Axios.post("http://localhost:4000/getAllOrder", {
+        Axios.post("https://eatsy-0329.herokuapp.com/getAllOrder", {
             id: id
         })
         .then((res) => {

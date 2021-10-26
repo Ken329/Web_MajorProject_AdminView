@@ -98,7 +98,7 @@ function TracksPage() {
             user_cuisine: data[9], 
             user_price_range: data[10]
         }
-        Axios.put("http://localhost:4000/updateUserProfile", {
+        Axios.put("https://eatsy-0329.herokuapp.com/updateUserProfile", {
             id: id,
             profile: newData
         })
