@@ -23,7 +23,15 @@ function TracksPage() {
         const id = cookies.get("user_id")
         
         if(id !== undefined){
-            Axios.post("https://eatsy-0329.herokuapp.com/getUser", {
+            getUserData(id);
+        }else{
+            history.push("/");
+        }
+    }, [] ) 
+
+    // getting data function
+    function getUserData(id){
+        Axios.post("https://eatsy-0329.herokuapp.com/getUser", {
                 uid: id
             })
             .then( (res) => {
@@ -35,15 +43,77 @@ function TracksPage() {
                     history.push('/Login');
                 }else{
                     setUserDetail(res.data.data[0]);
-                    console.log(res.data.data[0])
                     setLoading(false);
                 }
             })
-        }else{
-            history.push("/");
-        }
-    }, [] ) 
+    }
 
+    // getting input function
+    function updateProfile(){
+        var input = document.getElementsByClassName("input");
+        var data = [];
+        var check = true;
+        for(var myInput of input){
+            if(myInput.value === ""){
+                check = false;
+            }
+            data.push(myInput.value);
+        }
+        if(!check){
+            toast.error("Please do not leave any field empty", {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 3000
+            });
+            return;
+        }
+        check = userDetail.user_first_name === data[0] &&
+                userDetail.user_last_name === data[1] &&
+                userDetail.user_gender === data[2] &&
+                userDetail.user_address === data[3] &&
+                userDetail.user_city === data[4] &&
+                userDetail.user_state === data[5] &&
+                userDetail.user_postal_code === data[6] &&
+                userDetail.user_restaurant === data[7] &&
+                userDetail.user_image === data[8] &&
+                userDetail.user_cuisine === data[9] &&
+                userDetail.user_price_range === data[10]
+        if(check){
+            toast.info("No changes has been made", {
+                position: toast.POSITION.TOP_RIGHT,
+                autoClose: 3000
+            });
+            return;
+        }
+        const id = cookies.get("user_id")
+        var newData = {
+            user_first_name: data[0], 
+            user_last_name: data[1], 
+            user_gender: data[2], 
+            user_address: data[3], 
+            user_city: data[4], 
+            user_state: data[5], 
+            user_postal_code: data[6], 
+            user_restaurant: data[7], 
+            user_image: data[8], 
+            user_cuisine: data[9], 
+            user_price_range: data[10]
+        }
+        Axios.put("http://localhost:4000/updateUserProfile", {
+            id: id,
+            profile: newData
+        })
+        .then((res) => {
+            if(res.data.success){
+                toast.success(res.data.data, {
+                    position: toast.POSITION.TOP_RIGHT,
+                    autoClose: 3000
+                });
+                window.location.reload();
+            }
+        })
+    }
+
+    // input locking and unlock function 
     function unlockInput(index){
         setInputUsage(datas=>({
             ...datas,
@@ -71,6 +141,7 @@ function TracksPage() {
                         last_name={userDetail.user_last_name} 
                         first_name={userDetail.user_last_name} 
                         gender={userDetail.user_gender}
+                        credit={userDetail.user_credit}
                         section={-1}
                     />
                     <header className="bg-white shadow">
@@ -99,8 +170,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[0]
-                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none"
-                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none"
+                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[0]
@@ -130,8 +201,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[1]
-                                            ? "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none"
-                                            : "w-11/12 bg-white px-2 py-1 rounded-lg outline-none"
+                                            ? "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[1]
@@ -152,7 +223,7 @@ function TracksPage() {
                                     <dt className="text-sm font-medium text-gray-500">Gender</dt>
                                     <div
                                     className="text-sm flex items-center text-gray-900 sm:col-span-2">
-                                        <input 
+                                        <select 
                                         defaultValue={userDetail.user_gender}
                                         disabled={
                                             inputUsage[2]
@@ -161,9 +232,13 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[2]
-                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none"
-                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none"
-                                        }/>
+                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none text-black input"
+                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none text-black input"
+                                        }>
+                                            <option value="Mr.">Mr.</option>
+                                            <option value="Ms.">Ms.</option>
+                                            <option value="Other.">Others</option>
+                                        </select>
                                         {
                                             inputUsage[2]
                                             ? <LockClosed 
@@ -192,8 +267,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[3]
-                                            ? "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none"
-                                            : "w-11/12 bg-white px-2 py-1 rounded-lg outline-none"
+                                            ? "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[3]
@@ -223,8 +298,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[4]
-                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none"
-                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none"
+                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[4]
@@ -245,7 +320,7 @@ function TracksPage() {
                                     <dt className="text-sm font-medium text-gray-500">State</dt>
                                     <div
                                     className="text-sm flex items-center text-gray-900 sm:col-span-2">
-                                        <input 
+                                        <select 
                                         defaultValue={userDetail.user_state}
                                         disabled={
                                             inputUsage[5]
@@ -254,9 +329,25 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[5]
-                                            ? "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none"
-                                            : "w-11/12 bg-white px-2 py-1 rounded-lg outline-none"
-                                        }/>
+                                            ? "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
+                                        }>
+                                            <option value="Selangor">Selangor</option>
+                                            <option value="Johor">Johor</option>
+                                            <option value="Kuala Lumpur">Kuala Lumpur</option>
+                                            <option value="Kedah">Kedah</option>
+                                            <option value="Kelantan">Kelantan</option>
+                                            <option value="Malacca">Malacca</option>
+                                            <option value="Negeri Sembilan">Negeri Sembilan</option>
+                                            <option value="Pahang">Pahang</option>
+                                            <option value="Penang">Penang</option>
+                                            <option value="Perak">Perak</option>
+                                            <option value="Sabah">Sabah</option>
+                                            <option value="Sarawak">Sarawak</option>
+                                            <option value="Terengganu">Terengganu</option>
+                                            <option value="Labuan">Labuan</option>
+                                            <option value="Putrajaya">Putrajaya</option>
+                                        </select>
                                         {
                                             inputUsage[5]
                                             ? <LockClosed 
@@ -285,8 +376,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[6]
-                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none"
-                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none"
+                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[6]
@@ -316,8 +407,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[7]
-                                            ? "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none"
-                                            : "w-11/12 bg-white px-2 py-1 rounded-lg outline-none"
+                                            ? "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[7]
@@ -347,8 +438,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[8]
-                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none"
-                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none"
+                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[8]
@@ -369,7 +460,7 @@ function TracksPage() {
                                     <dt className="text-sm font-medium text-gray-500">Restaurant Cuisine</dt>
                                     <div
                                     className="text-sm flex items-center text-gray-900 sm:col-span-2">
-                                        <input 
+                                        <select 
                                         defaultValue={userDetail.user_cuisine}
                                         disabled={
                                             inputUsage[9]
@@ -378,9 +469,16 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[9]
-                                            ? "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none"
-                                            : "w-11/12 bg-white px-2 py-1 rounded-lg outline-none"
-                                        }/>
+                                            ? "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
+                                        }>
+                                            <option value="Chinese">Chinese</option>
+                                            <option value="Indian">Indian</option>
+                                            <option value="Malay">Malay</option>
+                                            <option value="Eastern">Eastern</option>
+                                            <option value="Japanese">Japanese</option>
+                                            <option value="Korean">Korean</option>
+                                        </select>
                                         {
                                             inputUsage[9]
                                             ? <LockClosed 
@@ -400,7 +498,7 @@ function TracksPage() {
                                     <dt className="text-sm font-medium text-gray-500">Restarant Price Range</dt>
                                     <div
                                     className="text-sm flex items-center text-gray-900 sm:col-span-2">
-                                        <input 
+                                        <select 
                                         defaultValue={userDetail.user_price_range}
                                         disabled={
                                             inputUsage[10]
@@ -409,9 +507,14 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[10]
-                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none"
-                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none"
-                                        }/>
+                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
+                                        }>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                        </select>
                                         {
                                             inputUsage[10]
                                             ? <LockClosed 
@@ -428,7 +531,11 @@ function TracksPage() {
                                     </div>
                                 </div>
                                 <div className="px-4 py-5 flex justify-end sm:px-6">
-                                    <button className="px-3 py-2 bg-gray-50 rounded-lg hover:bg-gray-100">Update</button>
+                                    <button 
+                                    onClick={e => updateProfile()}
+                                    className="px-3 py-2 bg-gray-50 rounded-lg hover:bg-gray-100">
+                                        Update
+                                    </button>
                                 </div>
                                 </dl>
                             </div>

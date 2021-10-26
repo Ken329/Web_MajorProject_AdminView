@@ -393,6 +393,7 @@ function AdminPage() {
                         last_name={"Ken"} 
                         first_name={"Liau"} 
                         gender={userDetail.user_gender}
+                        credit={userDetail.user_credit}
                         section={0}
                     />
                     <header className="bg-white shadow">
