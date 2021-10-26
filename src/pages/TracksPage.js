@@ -440,13 +440,6 @@ function TracksPage() {
                                                                         }
                                                                     </td>
                                                                     <td></td>
-                                                                    {/* <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                                        <p 
-                                                                            onClick={e => updateTableStatus(e, index)}
-                                                                            className="text-indigo-600 cursor-pointer hover:text-indigo-900">
-                                                                            Update
-                                                                        </p>
-                                                                    </td> */}
                                                                 </tr>
                                                     })
                                                 }
