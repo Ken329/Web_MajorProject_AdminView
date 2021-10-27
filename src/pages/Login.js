@@ -15,7 +15,7 @@ function Login() {
   const [userAction, setUserAction] = useState("login");
 
   useEffect( () => {
-    if(cookies.get("user_id") !== undefined){
+    if(cookies.get("eatsy_id") !== undefined){
       history.push("/Dashboard");
     }
   }, [] )
@@ -51,9 +51,9 @@ function Login() {
                     const current = new Date();
                     const nextYear = new Date();
                     nextYear.setFullYear(current.getFullYear() + 1);
-                    cookies.set("user_id", data.id, {path: "/", expires: nextYear});
+                    cookies.set("eatsy_id", data.id, {path: "/", expires: nextYear});
                   }else{
-                    cookies.set("user_id", data.id, {path: "/"});
+                    cookies.set("eatsy_id", data.id, {path: "/"});
                   }
                   setTimeout( () => {
                     history.push(`/Dashboard`);
