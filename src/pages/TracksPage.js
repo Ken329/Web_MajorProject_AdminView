@@ -23,7 +23,7 @@ function TracksPage() {
     const [tableBtn, setTableBtn] = useState(false);
 
     useEffect( () => {
-        const id = cookies.get("user_id")
+        const id = cookies.get("eatsy_id");
         
         if(id !== undefined){
             Axios.post("https://eatsy-0329.herokuapp.com/getUser", {
@@ -87,7 +87,7 @@ function TracksPage() {
             data.push(myInput.value);
         }
         
-        const id = cookies.get("user_id");
+        const id = cookies.get("eatsy_id");;
         var tableId = uniqueId();
         Axios.post("https://eatsy-0329.herokuapp.com/insertNewTable", {
             id: id,
@@ -113,7 +113,7 @@ function TracksPage() {
     
     // update data
     function updateOrderStatus(e, orderId){
-        const id = cookies.get("user_id");
+        const id = cookies.get("eatsy_id");;
         var status = e.target.value;
         
         Axios.put("https://eatsy-0329.herokuapp.com/updateOrderStatus", {
@@ -132,7 +132,7 @@ function TracksPage() {
         })
     }
     function updateTableStatus(e, index){
-        const id = cookies.get("user_id");
+        const id = cookies.get("eatsy_id");;
         const status = e.target.value;
         
         Axios.put("https://eatsy-0329.herokuapp.com/updateTableStatus", {
@@ -176,7 +176,6 @@ function TracksPage() {
                         last_name={"Ken"} 
                         first_name={"Liau"} 
                         gender={userDetail.user_gender}
-                        credit={userDetail.user_credit}
                         section={3}
                     />
                     <header className="bg-white shadow">

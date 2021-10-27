@@ -21,7 +21,7 @@ function TracksPage() {
     const [orderMenuDetail, setOrderMenuDetail] = useState([]);
 
     useEffect( () => {
-        const id = cookies.get("user_id")
+        const id = cookies.get("eatsy_id");
         
         if(id !== undefined){
             Axios.post("https://eatsy-0329.herokuapp.com/getUser", {
@@ -63,7 +63,7 @@ function TracksPage() {
         })
     }
     function getOrderFood(food){
-        const id = cookies.get("user_id")
+        const id = cookies.get("eatsy_id");
 
         const myFood = JSON.parse(food);
         const foodList = myFood.food;
@@ -100,7 +100,6 @@ function TracksPage() {
                         last_name={"Ken"} 
                         first_name={"Liau"} 
                         gender={userDetail.user_gender}
-                        credit={userDetail.user_credit}
                         section={3}
                     />
                     <header className="bg-white shadow">

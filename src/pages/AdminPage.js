@@ -39,7 +39,7 @@ function AdminPage() {
     
     useEffect( () => {
         const interval = setInterval(() => {
-            const id = cookies.get("user_id");
+            const id = cookies.get("eatsy_id");
 
             Axios.post("https://eatsy-0329.herokuapp.com/getOrderWithIdNDate", {
                 id: id
@@ -82,7 +82,7 @@ function AdminPage() {
     }, [] )
     useEffect( () => {
         const interval = setInterval(() => {
-            const id = cookies.get("user_id");
+            const id = cookies.get("eatsy_id");
 
             Axios.post("https://eatsy-0329.herokuapp.com/getTableWithIdNDate", {
                 id: id
@@ -257,7 +257,7 @@ function AdminPage() {
         }
         if(method === "take-away"){
             var newCart = updateNewCart(cart);
-            const id = cookies.get("user_id");
+            const id = cookies.get("eatsy_id");
             var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
             Axios.post('https://eatsy-0329.herokuapp.com/restaurantTakeAway', {
                 id: id,
@@ -286,7 +286,7 @@ function AdminPage() {
                 return;
             }
             var newCart = updateNewCart(cart);
-            const id = cookies.get("user_id");
+            const id = cookies.get("eatsy_id");
             var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
             Axios.post('https://eatsy-0329.herokuapp.com/restaurantDineIn', {
                 id: id,
@@ -345,7 +345,7 @@ function AdminPage() {
     }
 
     useEffect( () => {
-        const id = cookies.get("user_id")
+        const id = cookies.get("eatsy_id")
         
         if(id !== undefined){
             Axios.post("https://eatsy-0329.herokuapp.com/getUser", {

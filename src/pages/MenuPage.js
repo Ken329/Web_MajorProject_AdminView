@@ -33,7 +33,7 @@ function TracksPage() {
     const [sideBarIndex, setSideBarIndex] = useState(0);
 
     useEffect( () => {
-        const id = cookies.get("user_id")
+        const id = cookies.get("eatsy_id");
         
         if(id !== undefined){
             Axios.post("https://eatsy-0329.herokuapp.com/getUser", {
@@ -149,7 +149,7 @@ function TracksPage() {
 
     // updating function
     function updateMenuDiscount(menuId, discount){
-        const id = cookies.get("user_id")
+        const id = cookies.get("eatsy_id");
         Axios.put("https://eatsy-0329.herokuapp.com/updateMenuDiscount", {
             id: id,
             menuId: menuId,
@@ -166,7 +166,7 @@ function TracksPage() {
         })
     }
     function updateMenuAvailable(menuId, available){
-        const id = cookies.get("user_id")
+        const id = cookies.get("eatsy_id");
         Axios.put("https://eatsy-0329.herokuapp.com/updateMenuAvailable", {
             id: id,
             menuId: menuId,
@@ -216,7 +216,7 @@ function TracksPage() {
         }
         if(check){
             if(checkImageExists(data[0])){
-                const id = cookies.get("user_id")
+                const id = cookies.get("eatsy_id");
                 var myData = {
                     food_image: data[0],
                     food_name: data[1],
@@ -274,7 +274,7 @@ function TracksPage() {
         }
         if(check){
             if(checkImageExists(data[0])){
-                const id = cookies.get("user_id")
+                const id = cookies.get("eatsy_id");
                 var myData = {
                     food_image: data[0],
                     food_name: data[1],
@@ -314,7 +314,7 @@ function TracksPage() {
 
     // deleting function
     function deleteMenu(menuId){
-        const id = cookies.get("user_id");
+        const id = cookies.get("eatsy_id");;
         Axios.post("https://eatsy-0329.herokuapp.com/deleteMenuDetail", {
             id: id,
             menuId: menuId
@@ -389,7 +389,6 @@ function TracksPage() {
                         last_name={"Ken"} 
                         first_name={"Liau"} 
                         gender={userDetail.user_gender}
-                        credit={userDetail.user_credit}
                         section={1}
                     />
                     <header className="bg-white shadow">

@@ -20,7 +20,7 @@ function TracksPage() {
     const [inputUsage, setInputUsage] = useState([false, false, false, false, false, false, false, false, false, false, false])
     
     useEffect( () => {
-        const id = cookies.get("user_id")
+        const id = cookies.get("eatsy_id");
         
         if(id !== undefined){
             getUserData(id);
@@ -84,7 +84,7 @@ function TracksPage() {
             });
             return;
         }
-        const id = cookies.get("user_id")
+        const id = cookies.get("eatsy_id");
         var newData = {
             user_first_name: data[0], 
             user_last_name: data[1], 
@@ -141,7 +141,6 @@ function TracksPage() {
                         last_name={userDetail.user_last_name} 
                         first_name={userDetail.user_last_name} 
                         gender={userDetail.user_gender}
-                        credit={userDetail.user_credit}
                         section={-1}
                     />
                     <header className="bg-white shadow">
@@ -170,8 +169,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[0]
-                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
-                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
+                                            ? "w-11/12 bg-white px-3 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-gray-50 px-3 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[0]
@@ -201,8 +200,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[1]
-                                            ? "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
-                                            : "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
+                                            ? "w-11/12 bg-gray-50 px-3 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-white px-3 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[1]
@@ -267,8 +266,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[3]
-                                            ? "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
-                                            : "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
+                                            ? "w-11/12 bg-gray-50 px-3 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-white px-3 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[3]
@@ -298,8 +297,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[4]
-                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
-                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
+                                            ? "w-11/12 bg-white px-3 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-gray-50 px-3 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[4]
@@ -376,8 +375,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[6]
-                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
-                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
+                                            ? "w-11/12 bg-white px-3 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-gray-50 px-3 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[6]
@@ -407,8 +406,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[7]
-                                            ? "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
-                                            : "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
+                                            ? "w-11/12 bg-gray-50 px-3 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-white px-3 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[7]
@@ -438,8 +437,8 @@ function TracksPage() {
                                         }
                                         className={
                                             inputUsage[8]
-                                            ? "w-11/12 bg-white px-2 py-1 rounded-lg outline-none input"
-                                            : "w-11/12 bg-gray-50 px-2 py-1 rounded-lg outline-none input"
+                                            ? "w-11/12 bg-white px-3 py-1 rounded-lg outline-none input"
+                                            : "w-11/12 bg-gray-50 px-3 py-1 rounded-lg outline-none input"
                                         }/>
                                         {
                                             inputUsage[8]

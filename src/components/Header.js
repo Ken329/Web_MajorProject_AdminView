@@ -15,7 +15,7 @@ const navigation = [
 ]
 const userNavigation = [
     { name: 'Your Profile', href: '/Profile' },
-    { name: 'Easty Coin: $', href: '#' },
+    { name: 'Easty Coin', href: '/EatsyCoin' },
     { name: 'Sign Out', href: '#' },
 ]
   
@@ -41,7 +41,7 @@ function updateSection(section){
 }
 
 function signOut(e){
-    cookies.remove("user_id", {path: "/"});
+    cookies.remove("eatsy_id", {path: "/"});
     window.location.reload();
 }
 
@@ -126,16 +126,6 @@ class Header extends Component{
                                         >
                                         {item.name}
                                     </a>
-                                    : item.name === "Easty Coin: $"
-                                    ? <a
-                                        href={item.href}
-                                        className={classNames(
-                                            active ? 'bg-gray-100' : '',
-                                            'block px-4 py-2 text-sm text-gray-700'
-                                        )}
-                                        >
-                                        {item.name + this.props.credit}
-                                    </a>
                                     : <a
                                         href={item.href}
                                         className={classNames(
@@ -210,14 +200,6 @@ class Header extends Component{
                             className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
                             >
                             {item.name}
-                        </a>
-                        : item.name === "Easty Coin: $"
-                        ? <a
-                            key={item.name}
-                            href={item.href}
-                            className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
-                            >
-                            {item.name + this.props.credit}
                         </a>
                         :<a
                             key={item.name}
