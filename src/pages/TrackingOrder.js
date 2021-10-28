@@ -6,6 +6,7 @@ import { ClimbingBoxLoader } from 'react-spinners';
 import Cookies from 'universal-cookie';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Footer from '../components/Footer';
 
 const cookies = new Cookies();
 
@@ -89,6 +90,7 @@ function TracksPage() {
     return (
         <div className="min-h-screen w-full bg-gray-100">
             <ToastContainer />
+            <div className="min-h-screen w-full">
             {
                 loading ? (
                     <div className="h-screen w-full bg-gray-200 flex justify-center items-center">
@@ -137,6 +139,8 @@ function TracksPage() {
                     </>
                 )
             }
+            </div>
+            <Footer />
         </div>
     )
 }

@@ -11,6 +11,7 @@ import Qrcode from 'qrcode.react';
 import { XIcon } from '@heroicons/react/outline'
 import { PlusCircle, Printer } from 'heroicons-react';
 import printJS from 'print-js';
+import Footer from '../components/Footer';
 
 const cookies = new Cookies();
 
@@ -190,6 +191,7 @@ function TracksPage() {
     return (
         <div className="min-h-screen w-full bg-gray-100">
             <ToastContainer />
+            <div className="min-h-screen w-full">
             {
                 loading ? (
                     <div className="h-screen w-full bg-gray-200 flex justify-center items-center">
@@ -426,6 +428,8 @@ function TracksPage() {
                     </>
                 )
             }
+            </div>
+            <Footer />
         </div>
     )
 }

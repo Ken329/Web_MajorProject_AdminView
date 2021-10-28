@@ -1,0 +1,14 @@
+.copy-right{
+    display: flex;
+    position: static;
+    justify-content: center;
+
+}
+@media screen and (max-width: 1024px){
+    .copy-right{
+        position: absolute;
+        top: 2;
+        width: 100%;
+        padding: 2px 0;
+    }
+}

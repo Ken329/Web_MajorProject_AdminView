@@ -3,11 +3,13 @@ import Axios from 'axios'
 import { useHistory } from 'react-router-dom';
 import Header from '../components/Header'
 import { MinusCircleIcon, PlusCircleIcon } from '@heroicons/react/outline'
-import { PlusCircle, UserAdd } from 'heroicons-react';
+import { PlusCircle } from 'heroicons-react';
 import { ClimbingBoxLoader } from 'react-spinners';
 import Cookies from 'universal-cookie';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Footer from '../components/Footer';
+import './responsive.css'
 
 const cookies = new Cookies();
 
@@ -225,7 +227,9 @@ function AdminPage() {
             if(arr[index].quantity <= 0){
                 arr.splice(index, 1); 
             }
-            calculateTotalPrice(arr[index].singlePrice, "minus")
+            if(arr.length !== 0){
+                calculateTotalPrice(arr[index].singlePrice, "minus")
+            }
             setCart(arr);
         }else{
             arr[index] = {
@@ -388,7 +392,7 @@ function AdminPage() {
                         <ClimbingBoxLoader size="30" color={"#1A1B1B"}/>
                     </div>
                 ) : (
-                    <>
+                    <div className="min-h-screen w-full">
                     <Header 
                         last_name={"Ken"} 
                         first_name={"Liau"} 
@@ -401,7 +405,7 @@ function AdminPage() {
                         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
                         </div>
                     </header>
-                    <main className="flex relative overflow-hidden">
+                    <main className="min-w-max relative overflow-hidden responsive">
                         {
                             userMenu.length === 0 
                             ? <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 flex justify-center items-center">
@@ -447,16 +451,16 @@ function AdminPage() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="max-w-6xl w-3/4 flex-col py-6 sm:px-6 lg:px-8">
+                            <div className="w-full flex-col py-6 md:w-3/4 lg:px-8">
                                 <div className="w-full py-4 flex flex-wrap">
                                     {  insertCategories(menuCategories) }
                                 </div>
-                                <div className="w-full grid grid-cols-2 py-6 md:grid-cols-3 lg:grid-cols-4">
+                                <div className="w-full px-3 grid grid-cols-3 md:px-0 xl:grid-cols-4">
                                     {
                                         userMenu.map((data, index) => {
                                             return <div 
                                                     key={index}
-                                                    className={"bg-white h-72 flex-col rounded-lg relative m-5 categories_"+data.food_categories}>
+                                                    className={"bg-white w-44 my-3 h-72 flex-col rounded-lg relative md:mx-3 md:w-48 lg:w-52 categories_"+data.food_categories}>
                                                         <img className="w-full h-3/5 rounded-t-lg" src={data.food_image} />
                                                         <p className="m-2">{data.food_name}</p>
                                                         <p className="m-2">RM {data.food_price}</p>
@@ -486,7 +490,7 @@ function AdminPage() {
                                     }
                                 </div>
                             </div>
-                            <div className="bg-white w-1/4 h-full m-3 rounded-md">
+                            <div className="bg-white w-1/4 h-full m-3 rounded-md responsive-menu">
                                 <div className="w-full flex justify-center items-center">
                                     <button 
                                         onClick={e => {
@@ -510,7 +514,7 @@ function AdminPage() {
                                         className="w-4/5 h-auto border-gray-400 border-2 px-2 py-1 rounded-md" 
                                         placeholder="Table No"/>
                                 </div>
-                                <div className="flex-col p-3 justify-center">
+                                <div className="flex-col p-3 justify-center responsive-menu-item">
                                     {
                                         cart.length === 0 ? (
                                             <p className="w-full text-center my-3">Empty Cart</p>
@@ -552,9 +556,10 @@ function AdminPage() {
                         </>
                         }
                     </main>
-                    </>
+                    </div>
                 )
             }
+            <Footer />
         </div>
     )
 }

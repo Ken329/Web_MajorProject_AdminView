@@ -8,6 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Doughnut } from 'react-chartjs-2';
 import './scrollbar.css'
+import Footer from '../components/Footer';
 
 const cookies = new Cookies();
 
@@ -152,6 +153,7 @@ function TracksPage() {
     return (
         <div className="min-h-screen w-full bg-gray-100">
             <ToastContainer />
+            <div className="min-h-screen w-full">
                 <Header 
                     last_name={"Ken"} 
                     first_name={"Liau"} 
@@ -303,6 +305,8 @@ function TracksPage() {
                         }
                     </section>
                 </main>
+            </div>
+            <Footer />
         </div>
     )
 }

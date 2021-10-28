@@ -10,6 +10,7 @@ import { Ban, Pencil, PlusCircle, Trash } from 'heroicons-react';
 import { Dialog, Transition } from '@headlessui/react'
 import { XIcon } from '@heroicons/react/outline'
 import "./scrollbar.css"
+import Footer from '../components/Footer';
 
 const cookies = new Cookies();
 
@@ -384,7 +385,7 @@ function TracksPage() {
                         <ClimbingBoxLoader size="30" color={"#1A1B1B"}/>
                     </div>
                 ) : (
-                    <>
+                    <div className="min-h-screen w-full">
                     <Header 
                         last_name={"Ken"} 
                         first_name={"Liau"} 
@@ -776,9 +777,10 @@ function TracksPage() {
                             </section>
                         }
                     </main>
-                    </>
+                    </div>
                 )
             }
+            <Footer />
         </div>
     )
 }

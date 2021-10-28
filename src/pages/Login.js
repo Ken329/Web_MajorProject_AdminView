@@ -6,6 +6,7 @@ import Cookies from 'universal-cookie';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ArrowCircleLeft } from 'heroicons-react';
+import Footer from '../components/Footer';
 
 const cookies = new Cookies();
 
@@ -262,6 +263,7 @@ function Login() {
           </form>
         }
       </div>
+      <Footer />
     </div>
   )
 }
