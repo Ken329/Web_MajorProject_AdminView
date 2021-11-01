@@ -106,7 +106,7 @@ function TracksPage() {
             var foodData = res.data.data;
             var result = [];
             for(var i = foodData.length - 1; i >= 0; i--){
-                if(result.length < 10){
+                if(result.length < 9){
                     for(var j = 0; j < foodData[i].data.length; j++){
                         result.push(foodData[i].data[j]);
                     }

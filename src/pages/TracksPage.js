@@ -57,7 +57,7 @@ function TracksPage() {
             if(res.data.success){
                 setUserOrder([]);
                 const data = res.data.data;
-                for(var i = 0; i < data.length; i++){
+                for(var i = data.length - 1; i >= 0; i--){
                     setUserOrder(array => [...array, data[i]]);
                 }
                 getTableData(id);
@@ -73,7 +73,7 @@ function TracksPage() {
             if(res.data.success){
                 const data = res.data.data;
                 setUserTable([]);
-                for(var i = 0; i < data.length; i++){
+                for(var i = data.length - 1; i >= 0; i--){
                     setUserTable(array => [...array, data[i]]);
                 }
             }
@@ -310,10 +310,7 @@ function TracksPage() {
                                             </table>
                                         </div>
                                     )
-                                    : userTable.length <= 0 ? (
-                                        <p className="w-full text-center text-gray-700 font-bold">No Tracking Table</p>
-                                    ) : (
-                                        <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                                    : <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
                                             <p 
                                                 onClick={e => {
                                                     tableBtn ? setTableBtn(false) : setTableBtn(true)
@@ -413,41 +410,48 @@ function TracksPage() {
                                                     </tr> : <></>
                                                 }
                                                 {
-                                                    userTable.map( (data, index) => {
-                                                        return <tr key={index}>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.name}</td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.phone}</td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.pax}</td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                                        <select 
-                                                                            onChange={e => updateTableStatus(e, index)}
-                                                                            className={
-                                                                                data.status === "pending" 
-                                                                                ? "px-2 py-1 bg-yellow-100 text-yellow-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
-                                                                                : data.status === "approved" ?
-                                                                                "px-2 py-1 bg-pink-100 text-pink-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
-                                                                                : "px-2 py-1 bg-red-100 text-red-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
+                                                    userTable.length === 0 
+                                                    ? <tr>
+                                                        <td colSpan="6" className="py-6 text-center text-gray-600 font-bold">No Tracking Table</td>
+                                                    </tr>
+                                                    : <>
+                                                       {
+                                                           userTable.map( (data, index) => {
+                                                            return <tr key={index}>
+                                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.name}</td>
+                                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.phone}</td>
+                                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.pax}</td>
+                                                                        <td className="px-6 py-4 whitespace-nowrap">
+                                                                            <select 
+                                                                                onChange={e => updateTableStatus(e, index)}
+                                                                                className={
+                                                                                    data.status === "pending" 
+                                                                                    ? "px-2 py-1 bg-yellow-100 text-yellow-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
+                                                                                    : data.status === "approved" ?
+                                                                                    "px-2 py-1 bg-pink-100 text-pink-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
+                                                                                    : "px-2 py-1 bg-red-100 text-red-800 shadow-lg rounded-xl border-0 outline-none focus:border-gray-50"
+                                                                                }
+                                                                                defaultValue={data.status}>
+                                                                                    <option value="pending">Pending</option>
+                                                                                    <option value="approved">Approved</option>
+                                                                                    <option value="decline">Decline</option>
+                                                                            </select>
+                                                                        </td>
+                                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                                            {
+                                                                                new Date(data.date.seconds * 1000).toLocaleDateString() + " " +
+                                                                                new Date(data.date.seconds * 1000).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
                                                                             }
-                                                                            defaultValue={data.status}>
-                                                                                <option value="pending">Pending</option>
-                                                                                <option value="approved">Approved</option>
-                                                                                <option value="decline">Decline</option>
-                                                                        </select>
-                                                                    </td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                                        {
-                                                                            new Date(data.date.seconds * 1000).toLocaleDateString() + " " +
-                                                                            new Date(data.date.seconds * 1000).toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
-                                                                        }
-                                                                    </td>
-                                                                    <td></td>
-                                                                </tr>
-                                                    })
+                                                                        </td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                }) 
+                                                       }
+                                                    </>
                                                 }
                                             </tbody>
                                             </table>
                                         </div>
-                                    )
                                 }
                             </div>
                         </section>
