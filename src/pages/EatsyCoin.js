@@ -11,7 +11,7 @@ import Footer from '../components/Footer';
 
 const cookies = new Cookies();
 
-function TracksPage() {
+function EatsyCoin() {
     let history = useHistory();
 
     const [loading, setLoading] = useState(true);
@@ -19,6 +19,9 @@ function TracksPage() {
     const [userDetail, setUserDetail] = useState([]);
 
     const [allOrder, setAllOrder] = useState([]);
+
+    const [allOrderNumber, setAllOrderNumber] = useState([]);
+    const [pageOrderNumber, setPageOrderNumber] = useState(0);
     
     useEffect( () => {
         const id = cookies.get("eatsy_id");
@@ -52,14 +55,20 @@ function TracksPage() {
         .then((res) => {
             var foodData = res.data.data;
             setAllOrder([]);
+            var count = 0;
             for(var i = foodData.length - 1; i >= 0; i--){
-                setAllOrder(array => [...array, foodData[i]])
+                setAllOrder(array => [...array, foodData[i]]);
+                if(!hasDecimal(count / 5)){
+                    setAllOrderNumber(array => [...array, count]);
+                    console.log(count)
+                }
+                count++;
             }
             setLoading(false);
         })
     }
 
-    // delelte order record
+    // delete order record
     function deleteOrderRecord(orderId){
         const id = cookies.get("eatsy_id");;
         
@@ -74,6 +83,11 @@ function TracksPage() {
             });
             insertAllOrder(id);
         })
+    }
+
+    // personal used function
+    function hasDecimal (num) {
+        return !!(num % 1);
     }
 
     return (
@@ -149,7 +163,7 @@ function TracksPage() {
                                             </tbody>
                                             : <>
                                                 {
-                                                allOrder.map((data) => {
+                                                allOrder.slice(pageOrderNumber, pageOrderNumber + 5).map((data) => {
                                                     return <tbody 
                                                             key={data.date}
                                                             className="bg-white divide-y divide-gray-200">
@@ -188,6 +202,24 @@ function TracksPage() {
                                             </>
                                         }
                                     </table>
+                                    <section className="w-full mx-auto flex py-3 justify-center overflow-hidden">
+                                                {
+                                                    allOrderNumber.map((data) => {
+                                                        return <button 
+                                                                key={"order_page_"+(data / 10) + 1}
+                                                                onClick={e => {
+                                                                    setPageOrderNumber(data)
+                                                                }}
+                                                                className={
+                                                                    pageOrderNumber === data
+                                                                    ? 'py-1 px-3 rounded-md bg-gray-300 mx-2'
+                                                                    : 'py-1 px-3 rounded-md bg-white mx-2'
+                                                                }>
+                                                                    {(data / 5) + 1}
+                                                                </button>
+                                                    })
+                                                }
+                                            </section>
                                 </div>
                             </div>
                         </main>
@@ -200,4 +232,4 @@ function TracksPage() {
     )
 }
 
-export default TracksPage
+export default EatsyCoin

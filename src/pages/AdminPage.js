@@ -368,14 +368,16 @@ function AdminPage() {
                         id: id
                     })
                     .then( (res) => {
-                        const data = res.data.data;
-                        for(var i = 1; i < data.length; i+=2){
-                            setUserMenu(array => [...array, data[i + 1]])
-                            setMenuId(array => [...array, data[i]])
-                            setMenuCategories(array => [...array, data[i + 1].food_categories])
+                        if(res.data.data.success){
+                            const data = res.data.data.data;
+                            for(var i = 1; i < data.length; i+=2){
+                                setUserMenu(array => [...array, data[i + 1]])
+                                setMenuId(array => [...array, data[i]])
+                                setMenuCategories(array => [...array, data[i + 1].food_categories])
+                            }
+                            setLoading(false);
+                            getCategoriesClicked("All");
                         }
-                        setLoading(false);
-                        getCategoriesClicked("All");
                     })
                 }
             })

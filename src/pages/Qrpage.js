@@ -15,7 +15,7 @@ import Footer from '../components/Footer';
 
 const cookies = new Cookies();
 
-function TracksPage() {
+function Qrpage() {
     let history = useHistory();
 
     const [loading, setLoading] = useState(true);
@@ -434,4 +434,4 @@ function TracksPage() {
     )
 }
 
-export default TracksPage
+export default Qrpage

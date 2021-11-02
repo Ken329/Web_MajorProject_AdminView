@@ -10,7 +10,7 @@ import Footer from '../components/Footer';
 
 const cookies = new Cookies();
 
-function TracksPage() {
+function TracksOrder() {
     let history = useHistory();
 
     const [loading, setLoading] = useState(true);
@@ -145,4 +145,4 @@ function TracksPage() {
     )
 }
 
-export default TracksPage
+export default TracksOrder

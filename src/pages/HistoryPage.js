@@ -11,7 +11,7 @@ import Footer from '../components/Footer';
 
 const cookies = new Cookies();
 
-function TracksPage() {
+function HistoryPage() {
     let history = useHistory();
 
     const [loading, setLoading] = useState(true);
@@ -302,7 +302,7 @@ function TracksPage() {
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
                                             {
-                                                    userTable.map( (data, index) => {
+                                                    userTable.slice(pageTableNumber, pageTableNumber + 10).map( (data, index) => {
                                                         return <tr key={index}>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.name}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.phone}</td>
@@ -328,7 +328,7 @@ function TracksPage() {
                                                                     setPageTableNumber(data)
                                                                 }}
                                                                 className={
-                                                                    pageOrderNumber === data
+                                                                    pageTableNumber === data
                                                                     ? 'py-1 px-3 rounded-md bg-gray-300 mx-2'
                                                                     : 'py-1 px-3 rounded-md bg-white mx-2'
                                                                 }>
@@ -353,4 +353,4 @@ function TracksPage() {
     )
 }
 
-export default TracksPage
+export default HistoryPage

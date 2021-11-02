@@ -14,7 +14,7 @@ import Footer from '../components/Footer';
 
 const cookies = new Cookies();
 
-function TracksPage() {
+function MenuPage() {
     let history = useHistory();
 
     const [loading, setLoading] = useState(true);
@@ -63,21 +63,23 @@ function TracksPage() {
             id: id
         })
         .then((res) => {
-            const data = res.data.data;
-            setMenu([]);
-            setMenuId([]);
-            setCategoriesShown([]);
-            setDiscountShown([]);
-            setAvailableShown([]);
-            for(var i = 1; i < data.length; i+=2){
-                setMenu(array => [...array, data[i + 1]]);
-                setMenuId(array => [...array, data[i]]);
-                setCategoriesShown(array => [...array, "yes"]);
-                setDiscountShown(array => [...array, "yes"]);
-                setAvailableShown(array => [...array, "yes"]);
+            if(res.data.data.success){
+                const data = res.data.data.data;
+                setMenu([]);
+                setMenuId([]);
+                setCategoriesShown([]);
+                setDiscountShown([]);
+                setAvailableShown([]);
+                for(var i = 1; i < data.length; i+=2){
+                    setMenu(array => [...array, data[i + 1]]);
+                    setMenuId(array => [...array, data[i]]);
+                    setCategoriesShown(array => [...array, "yes"]);
+                    setDiscountShown(array => [...array, "yes"]);
+                    setAvailableShown(array => [...array, "yes"]);
+                }
+                menuCategoriesList(data);
+                setLoading(false);
             }
-            menuCategoriesList(data);
-            setLoading(false);
         })
     }
 
@@ -785,4 +787,4 @@ function TracksPage() {
     )
 }
 
-export default TracksPage
+export default MenuPage

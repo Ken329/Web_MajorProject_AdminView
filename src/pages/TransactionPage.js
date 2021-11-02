@@ -12,7 +12,7 @@ import Footer from '../components/Footer';
 
 const cookies = new Cookies();
 
-function TracksPage() {
+function TransactionPage() {
     let history = useHistory();
 
     const [bestSellingLoading, setBestSellingLoading] = useState(true);
@@ -311,4 +311,4 @@ function TracksPage() {
     )
 }
 
-export default TracksPage
+export default TransactionPage

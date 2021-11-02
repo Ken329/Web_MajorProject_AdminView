@@ -23,6 +23,11 @@ function TracksPage() {
     const [trackingBtn, setTrackingBtn] = useState("Order");
     const [tableBtn, setTableBtn] = useState(false);
 
+    const [allOrderNumber, setAllOrderNumber] = useState([]);
+    const [pageOrderNumber, setPageOrderNumber] = useState(0);
+    const [allTableNumber, setAllTableNumber] = useState([]);
+    const [pageTableNumber, setPageTableNumber] = useState(0);
+
     useEffect( () => {
         const id = cookies.get("eatsy_id");
         
@@ -57,8 +62,13 @@ function TracksPage() {
             if(res.data.success){
                 setUserOrder([]);
                 const data = res.data.data;
+                var count = 0;
                 for(var i = data.length - 1; i >= 0; i--){
                     setUserOrder(array => [...array, data[i]]);
+                    if(!hasDecimal(count / 10)){
+                        setAllOrderNumber(array => [...array, count]);
+                    }
+                    count++;
                 }
                 getTableData(id);
                 setLoading(false);
@@ -73,8 +83,13 @@ function TracksPage() {
             if(res.data.success){
                 const data = res.data.data;
                 setUserTable([]);
+                var count = 0;
                 for(var i = data.length - 1; i >= 0; i--){
                     setUserTable(array => [...array, data[i]]);
+                    if(!hasDecimal(count / 10)){
+                        setAllTableNumber(array => [...array, count]);
+                    }
+                    count++;
                 }
             }
         })
@@ -161,7 +176,9 @@ function TracksPage() {
     
         return (idStr);
     }
-
+    function hasDecimal (num) {
+        return !!(num % 1);
+    }
 
     return (
         <div className="min-h-screen w-full bg-gray-100">
@@ -268,7 +285,7 @@ function TracksPage() {
                                             </thead>
                                             <tbody className="bg-white divide-y divide-gray-200">
                                                 {
-                                                    userOrder.map( (data, index) => {
+                                                    userOrder.slice(pageOrderNumber, pageOrderNumber + 10).map( (data, index) => {
                                                         return <tr key={index}>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_id}</td>
                                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.order_type}</td>
@@ -308,6 +325,24 @@ function TracksPage() {
                                                 }
                                             </tbody>
                                             </table>
+                                            <section className="w-full mx-auto flex py-3 justify-center overflow-hidden">
+                                                {
+                                                    allOrderNumber.map((data) => {
+                                                        return <button 
+                                                                key={"order_page_"+(data / 10) + 1}
+                                                                onClick={e => {
+                                                                    setPageOrderNumber(data)
+                                                                }}
+                                                                className={
+                                                                    pageOrderNumber === data
+                                                                    ? 'py-1 px-3 rounded-md bg-gray-300 mx-2'
+                                                                    : 'py-1 px-3 rounded-md bg-white mx-2'
+                                                                }>
+                                                                    {(data / 10) + 1}
+                                                                </button>
+                                                    })
+                                                }
+                                            </section>
                                         </div>
                                     )
                                     : <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
@@ -416,7 +451,7 @@ function TracksPage() {
                                                     </tr>
                                                     : <>
                                                        {
-                                                           userTable.map( (data, index) => {
+                                                           userTable.slice(pageTableNumber, pageTableNumber + 10).map( (data, index) => {
                                                             return <tr key={index}>
                                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.name}</td>
                                                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.phone}</td>
@@ -451,6 +486,24 @@ function TracksPage() {
                                                 }
                                             </tbody>
                                             </table>
+                                            <section className="w-full mx-auto flex py-3 justify-center overflow-hidden">
+                                                {
+                                                    allTableNumber.map((data) => {
+                                                        return <button 
+                                                                key={"table_page_"+(data / 10) + 1}
+                                                                onClick={e => {
+                                                                    setPageTableNumber(data)
+                                                                }}
+                                                                className={
+                                                                    pageTableNumber === data
+                                                                    ? 'py-1 px-3 rounded-md bg-gray-300 mx-2'
+                                                                    : 'py-1 px-3 rounded-md bg-white mx-2'
+                                                                }>
+                                                                    {(data / 10) + 1}
+                                                                </button>
+                                                    })
+                                                }
+                                            </section>
                                         </div>
                                 }
                             </div>

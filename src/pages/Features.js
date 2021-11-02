@@ -35,7 +35,7 @@ const features = [
   },
 ]
 
-export default function Product() {
+export default function Features() {
   return (
     <>
         <div className="min-h-screen py-12 bg-white">

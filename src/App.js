@@ -30,6 +30,9 @@ import Profile from './pages/Profile';
 // coin section
 import EatsyCoin from './pages/EatsyCoin'
 
+// client/customer section
+import Customer from './Client/Customer';
+
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import './App.css';
@@ -54,6 +57,7 @@ function App() {
             <Route path="/Transaction" exact component = {TransactionPage}/>
             <Route path="/Profile" exact component = {Profile}/>
             <Route path="/EatsyCoin" exact component = {EatsyCoin}/>
+            <Route path="/Client/Customer" exact component = {Customer}/>
           </Switch>
       </Router>
     </>
