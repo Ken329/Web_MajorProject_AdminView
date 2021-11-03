@@ -3,7 +3,7 @@ import Axios from 'axios'
 import { ClimbingBoxLoader } from 'react-spinners';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { CurrencyDollar, Speakerphone } from 'heroicons-react';
+import { CurrencyDollar, ShoppingBag, Speakerphone } from 'heroicons-react';
 
 function Customer() {
     const [loading, setLoading] = useState(true);
@@ -85,7 +85,7 @@ function Customer() {
         for(var i = 0; i < data.length; i++){
             if(data[i].food_categories === categories){
                 list.push(<div key={menuId[i]} className="group relative">
-                <div className="w-full min-h-80 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:h-80 lg:aspect-none">
+                <div className="w-full h-72 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 md:h-80 lg:aspect-none">
                     <img
                     src={data[i].food_image}
                     alt={data[i].food_name}
@@ -147,7 +147,7 @@ function Customer() {
                         : <main className="flex-col relative w-full bg-gray-100 overflow-hidden overflow-y-auto">
                             <div className="w-full flex-col">
                                 <img className="w-full h-60 object-cover" src={userDetail.image}/>
-                                <div className="max-w-7xl mx-auto py-2 px-4 sm:px-6 lg:px-8">
+                                <div className="max-w-7xl mx-auto py-2 px-4 relative sm:px-6 lg:px-8">
                                     <div className="my-2 flex">
                                         <h2 className="font-bold text-gray-700 text-2xl">
                                             {userDetail.name}. {userDetail.cuisine} Cuisine
@@ -183,18 +183,22 @@ function Customer() {
                                         </h4>
                                     </div>
                                 </div>
+                                <div className="absolute top-5 right-5 p-2 rounded-full bg-white sm:top-10 sm:right-10">
+                                    <ShoppingBag className="w-9 h-9 cursor-pointer text-blue-900 sm:w-12 sm:h-12"/>
+                                    <span className="bg-blue-300 text-blue-700 z-10 absolute top-1 right-2 px-2 rounded-full">0</span>
+                                </div>
                             </div>
                             <div>
                             <div className="bg-white">
-                                <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+                                <div className="max-w-2xl mx-auto pb-8 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
                                     {
                                         menuCategories.map((data) => {
-                                            return <>
+                                            return <div key={data}>
                                             <h2 className="text-2xl font-extrabold tracking-tight pt-6 text-gray-900">{data}</h2>
-                                            <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+                                            <div className="mt-6 grid grid-cols-2 gap-y-10 gap-x-6 sm:grid-cols-3 lg:grid-cols-4 xl:gap-x-8">
                                                 {insertingMenuFunction(menu, data)}
                                             </div>
-                                            </>
+                                            </div>
                                         })
                                     }
                                 </div>
