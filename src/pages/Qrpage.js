@@ -362,7 +362,7 @@ function Qrpage() {
                                         </div>
                                     <Qrcode 
                                         className="w-4/5 mx-auto mt-6"
-                                        value={"https://ken329.github.io/Web_MajorProject_CustomerView/menu.html?restaurantID="+userId}
+                                        value={"https://eatsy.netlify.app/Client/Customer?res_id="+userId}
                                     />
                                     <div className="w-full flex justify-center items-center py-4 font-semibold">Scan here to get menu</div>
                                 </div>
@@ -395,7 +395,7 @@ function Qrpage() {
                                             </div>
                                             <Qrcode 
                                                 className="w-4/5 mx-auto mt-6"
-                                                value={"https://ken329.github.io/Web_MajorProject_CustomerView/menu.html?restaurantID="+userId+"&table_no="+data.table_no}
+                                                value={"https://eatsy.netlify.app/Client/Customer?res_id="+userId+"&table_no="+data.table_no}
                                             />
                                             <div className="w-full flex justify-center items-center px-2 py-4 font-semibold">{data.description}</div>
                                             <div className="absolute rounded-lg left-0 right-0 bottom-0 bg-gray-200 transform translate-y-2/3 
