@@ -1,69 +1,12 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import Axios from 'axios'
-import { ClimbingBoxLoader } from 'react-spinners';
+import { ClimbingBoxLoader, PulseLoader, RingLoader } from 'react-spinners';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { CurrencyDollar, MinusCircle, PlusCircle, ShoppingBag, Speakerphone } from 'heroicons-react';
+import { Cash, CreditCard, CubeTransparent, CurrencyDollar, MinusCircle, PlusCircle, ShoppingBag, Speakerphone } from 'heroicons-react';
 import { Dialog, Transition } from '@headlessui/react'
 import { TrashIcon, XIcon } from '@heroicons/react/outline'
 import '../pages/scrollbar.css'
-
-const products = [
-  {
-    id: 1,
-    name: 'Throwback Hip Bag',
-    href: '#',
-    color: 'Salmon',
-    price: '$90.00',
-    quantity: 1,
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-01.jpg',
-    imageAlt: 'Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.',
-  },
-  {
-    id: 2,
-    name: 'Medium Stuff Satchel',
-    href: '#',
-    color: 'Blue',
-    price: '$32.00',
-    quantity: 1,
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg',
-    imageAlt:
-      'Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.',
-  },
-  {
-    id: 2,
-    name: 'Medium Stuff Satchel',
-    href: '#',
-    color: 'Blue',
-    price: '$32.00',
-    quantity: 1,
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg',
-    imageAlt:
-      'Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.',
-  },
-  {
-    id: 2,
-    name: 'Medium Stuff Satchel',
-    href: '#',
-    color: 'Blue',
-    price: '$32.00',
-    quantity: 1,
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg',
-    imageAlt:
-      'Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.',
-  },
-  {
-    id: 2,
-    name: 'Medium Stuff Satchel',
-    href: '#',
-    color: 'Blue',
-    price: '$32.00',
-    quantity: 1,
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/shopping-cart-page-04-product-02.jpg',
-    imageAlt:
-      'Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.',
-  },
-]
 
 function Customer() {
     const [loading, setLoading] = useState(true);
@@ -76,6 +19,8 @@ function Customer() {
     const [open, setOpen] = useState(false);
     const [cart, setCart] = useState([]);
     const [total, setTotal] = useState(0);
+
+    const [cartAction, setCartAction] = useState("cart");
     
     useEffect( () => {
         const queryString = window.location.search;
@@ -153,7 +98,6 @@ function Customer() {
         myData = myData.sort((a, b) => a.categories < b.categories ? -1 : (a.categories > b.categories ? 1 : 0));
         setMenu(myData);
     }
-
     // addd to cart function
     function addToCart(id, detail){
         var data = {};
@@ -195,7 +139,49 @@ function Customer() {
         setCart(array => [...array, data]);
         calculateTotalPrice(price, "plus");
     }
-
+    // altering quantity of cart
+    function alteringCart(index, action){
+        let arr = [...cart];
+        if(action === "minus"){
+            arr[index] = {
+                id: arr[index].id,
+                price: (parseFloat(arr[index].singlePrice) * (parseInt(arr[index].quantity) - 1)).toFixed(2),
+                singlePrice: arr[index].singlePrice,
+                quantity: parseInt(arr[index].quantity) - 1,
+                image: arr[index].image,
+                name: arr[index].name,
+                categories: arr[index].categories
+            }
+            if(arr.length !== 0){
+                calculateTotalPrice(arr[index].singlePrice, "minus")
+            }
+            if(arr[index].quantity <= 0){
+                arr.splice(index, 1); 
+            }
+            setCart(arr);
+        }else{
+            arr[index] = {
+                id: arr[index].id,
+                price: (parseFloat(arr[index].singlePrice) * (parseInt(arr[index].quantity) + 1)).toFixed(2),
+                singlePrice: arr[index].singlePrice,
+                quantity: parseInt(arr[index].quantity) + 1,
+                image: arr[index].image,
+                name: arr[index].name,
+                categories: arr[index].categories
+            }
+            calculateTotalPrice(arr[index].singlePrice, "plus")
+            setCart(arr);
+        }
+    }
+    // deleting food from cart
+    function deletingCart(index){
+        let arr = [...cart];
+        if(arr.length !== 0){
+            calculateTotalPrice(arr[index].price, "minus")
+        }
+        arr.splice(index, 1); 
+        setCart(arr);
+    }
     // calculate total price
     function calculateTotalPrice(price, action){
         if(action === 'minus'){
@@ -203,6 +189,56 @@ function Customer() {
             return;
         }
         setTotal((parseFloat(total) + parseFloat(price)).toFixed(2))
+    }
+    // proceed to checkout function
+    function proceedToCheckout(){
+        var name = document.getElementById("information").elements['name'].value;
+        var email = document.getElementById("information").elements['email'].value;
+        var phone = document.getElementById("information").elements['phone'].value;
+        var type = document.getElementById("information").elements['method'].value;
+        var method = document.getElementById("information").elements['payment'].value;
+        
+        if(infoValidation(name) && infoValidation(email) && infoValidation(phone) && infoValidation(type) && infoValidation(method)){
+            if(emailValidation(email)){
+                if(phoneNumberValidation(phone)){
+                    console.log(name, email)
+                }
+            }
+        }
+    }
+
+    // validation
+    function infoValidation(info){
+        if(info !== ""){
+            return true
+        }
+        toast.error("Fill up all the needed information!", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 3000
+        });
+        return false;
+    }
+    function emailValidation(mail) 
+    {
+        if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(mail))
+        {
+            return true;
+        }
+        toast.error("You have entered an invalid email address!", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 3000
+        });
+        return false;
+    }
+    function phoneNumberValidation(phone){
+        if(/^(\+?6?01)[02-46-9]-*[0-9]{7}$|^(\+?6?01)[1]-*[0-9]{8}$/.test(phone)){
+            return true;
+        }
+        toast.error("You have entered an invalid phone number!", {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 3000
+        });
+        return false;
     }
 
     return (
@@ -250,7 +286,11 @@ function Customer() {
                                     <div className="w-screen max-w-md">
                                         <div className="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
                                         <div className="flex w-full justify-center items-center py-3 border-b border-gray-200">
-                                            <p className="text-xs md:text-sm lg:text-base">
+                                            <p className={
+                                                cartAction === "cart"
+                                                ? "text-xs text-indigo-700 md:text-sm lg:text-base"
+                                                : "text-xs cursor-pointer md:text-sm lg:text-base"
+                                            }>
                                                 Cart
                                             </p>
                                             <svg xmlns="http://www.w3.org/2000/svg" 
@@ -262,7 +302,11 @@ function Customer() {
                                                 d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" 
                                                 clipRule="evenodd" />
                                             </svg>
-                                            <p className="text-xs md:text-sm lg:text-base">
+                                            <p className={
+                                                cartAction === "info"
+                                                ? "text-xs text-indigo-700 md:text-sm lg:text-base"
+                                                : "text-xs cursor-pointer md:text-sm lg:text-base"
+                                            }>
                                                 Personal Information
                                             </p>
                                             <svg xmlns="http://www.w3.org/2000/svg" 
@@ -274,101 +318,248 @@ function Customer() {
                                                 d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" 
                                                 clipRule="evenodd" />
                                             </svg>
-                                            <p className="text-xs md:text-sm lg:text-base">
+                                            <p className={
+                                                cartAction === "payment"
+                                                ? "text-xs text-indigo-700 md:text-sm lg:text-base"
+                                                : "text-xs cursor-pointer md:text-sm lg:text-base"
+                                            }>
                                                 Payment
                                             </p>
                                         </div>
-                                        <div className="flex-1 py-6 overflow-y-auto px-4 no-scrollbar sm:px-6">
-                                            <div className="flex items-start justify-between">
-                                            <Dialog.Title className="text-lg font-medium text-gray-900">Shopping cart</Dialog.Title>
-                                            <div className="ml-3 h-7 flex items-center">
-                                                <button
-                                                type="button"
-                                                className="-m-2 p-2 text-gray-400 hover:text-gray-500"
-                                                onClick={() => setOpen(false)}
-                                                >
-                                                <span className="sr-only">Close panel</span>
-                                                <XIcon className="h-6 w-6" aria-hidden="true" />
-                                                </button>
-                                            </div>
-                                            </div>
-                                            <div className="mt-8">
-                                                {
-                                                    cart.length === 0
-                                                    ? <p>Empty</p>
-                                                    : <div className="flow-root">
-                                                    <ul role="list" className="-my-6 divide-y divide-gray-200">
-                                                    {cart.map((product) => (
-                                                        <li key={product.id} className="py-6 flex">
-                                                        <div className="flex-shrink-0 w-24 h-24 border border-gray-200 rounded-md overflow-hidden">
-                                                            <img
-                                                            src={product.image}
-                                                            alt={product.name}
-                                                            className="w-full h-full object-center object-cover"
-                                                            />
-                                                        </div>
-    
-                                                        <div className="ml-4 flex-1 flex flex-col">
-                                                            <div>
-                                                            <div className="flex justify-between text-base font-medium text-gray-900">
-                                                                <h3>{product.name}</h3>
-                                                                <p className="ml-4">RM {product.price}</p>
-                                                            </div>
-                                                            <p className="mt-1 text-sm text-gray-500">{product.categories}</p>
-                                                            </div>
-                                                            <div className="flex-1 flex items-end justify-between text-sm">
-                                                            <div className="flex">
-                                                                <MinusCircle 
-                                                                className="w-6 h-6 text-gray-700 cursor-pointer hover:text-gray-900"/>
-                                                                <p className="border-2 border-gray-700 px-2 mx-2 rounded-md">
-                                                                    {product.quantity}
-                                                                </p>
-                                                                <PlusCircle 
-                                                                className="w-6 h-6 text-gray-700 cursor-pointer hover:text-gray-900"/>
-                                                            </div>
-                                                            <div className="flex">
-                                                                <button type="button" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                                                <TrashIcon 
-                                                                className="w-6 h-6 text-gray-700 hover:text-gray-900"/>
-                                                                </button>
-                                                            </div>
-                                                            </div>
-                                                        </div>
-                                                        </li>
-                                                    ))}
-                                                    </ul>
+                                        {
+                                            cartAction === "cart"
+                                            ? <>
+                                            <div className="flex-1 py-6 overflow-y-auto px-4 no-scrollbar sm:px-6">
+                                                <div className="flex items-start justify-between">
+                                                <Dialog.Title className="text-lg font-medium text-gray-900">Shopping cart</Dialog.Title>
+                                                <div className="ml-3 h-7 flex items-center">
+                                                    <button
+                                                    type="button"
+                                                    className="-m-2 p-2 text-gray-400 hover:text-gray-500"
+                                                    onClick={() => setOpen(false)}
+                                                    >
+                                                    <span className="sr-only">Close panel</span>
+                                                    <XIcon className="h-6 w-6" aria-hidden="true" />
+                                                    </button>
                                                 </div>
-                                                }
+                                                </div>
+                                                <div className="mt-8">
+                                                    {
+                                                        cart.length === 0
+                                                        ? <div 
+                                                        onClick={e => {
+                                                            setOpen(false)
+                                                        }}
+                                                        className="w-3/5 h-28 mx-auto px-2 border-4 border-dashed border-gray-200 font-bold text-gray-600 rounded-lg flex justify-center items-center text-center cursor-pointer hover:text-gray-900 hover:border-gray-400">
+                                                            Start addding food by clicking here
+                                                        </div>
+                                                        : <div className="flow-root">
+                                                        <ul role="list" className="-my-6 divide-y divide-gray-200">
+                                                        {cart.map((product, index) => (
+                                                            <li key={product.id} className="py-6 flex">
+                                                            <div className="flex-shrink-0 w-24 h-24 border border-gray-200 rounded-md overflow-hidden">
+                                                                <img
+                                                                src={product.image}
+                                                                alt={product.name}
+                                                                className="w-full h-full object-center object-cover"
+                                                                />
+                                                            </div>
+                                                            <div className="ml-4 flex-1 flex flex-col">
+                                                                <div>
+                                                                <div className="flex justify-between text-base font-medium text-gray-900">
+                                                                    <h3>{product.name}</h3>
+                                                                    <p className="ml-4">RM{product.price}</p>
+                                                                </div>
+                                                                <p className="mt-1 text-sm text-gray-500">{product.categories}</p>
+                                                                </div>
+                                                                <div className="flex-1 flex items-end justify-between text-sm">
+                                                                <div className="flex pt-2">
+                                                                    <MinusCircle 
+                                                                    onClick={e => alteringCart(index,  "minus")}
+                                                                    className="w-6 h-6 text-gray-700 cursor-pointer hover:text-gray-900"/>
+                                                                    <p className="border-2 border-gray-700 px-2 mx-2 rounded-md">
+                                                                        {product.quantity}
+                                                                    </p>
+                                                                    <PlusCircle 
+                                                                    onClick={e => alteringCart(index,  "plus")}
+                                                                    className="w-6 h-6 text-gray-700 cursor-pointer hover:text-gray-900"/>
+                                                                </div>
+                                                                <div className="flex">
+                                                                    <button type="button" className="font-medium text-indigo-600 hover:text-indigo-500">
+                                                                    <TrashIcon 
+                                                                    onClick={e => deletingCart(index)}
+                                                                    className="w-6 h-6 text-gray-700 hover:text-gray-900"/>
+                                                                    </button>
+                                                                </div>
+                                                                </div>
+                                                            </div>
+                                                            </li>
+                                                        ))}
+                                                        </ul>
+                                                    </div>
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-
-                                        <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
-                                            <div className="flex justify-between text-base font-medium text-gray-900">
-                                            <p>Subtotal</p>
-                                            <p>$262.00</p>
-                                            </div>
-                                            <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
-                                            <div className="mt-6">
-                                            <a
-                                                href="#"
-                                                className="flex justify-center items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
-                                            >
-                                                Checkout
-                                            </a>
-                                            </div>
-                                            <div className="mt-6 flex justify-center text-sm text-center text-gray-500">
-                                            <p>
-                                                or{' '}
+                                            <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
+                                                <div className="flex justify-between text-base font-medium text-gray-900">
+                                                <p>Subtotal</p>
+                                                <p>RM{total}</p>
+                                                </div>
+                                                <p className="mt-0.5 text-sm text-gray-500">Taxes calculated at checkout.</p>
+                                                <div className="mt-6">
                                                 <button
-                                                type="button"
-                                                className="text-indigo-600 font-medium hover:text-indigo-500"
-                                                onClick={() => setOpen(false)}
+                                                onClick={e => {
+                                                    setCartAction("info")
+                                                }}
+                                                    className="w-full px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
                                                 >
-                                                Continue Shopping<span aria-hidden="true"> &rarr;</span>
+                                                    Checkout
                                                 </button>
-                                            </p>
+                                                </div>
+                                                <div className="mt-6 flex justify-center text-sm text-center text-gray-500">
+                                                <div className="flex">
+                                                    or{' '}
+                                                    <button
+                                                    type="button"
+                                                    className="text-indigo-600 font-medium flex mx-1 hover:text-indigo-500"
+                                                    onClick={() => setOpen(false)}
+                                                    >
+                                                    Continue Shopping
+                                                    </button>
+                                                </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                            </>
+                                            : cartAction === "info"
+                                            ? <>
+                                                <div className="flex-1 py-6 overflow-y-auto px-4 no-scrollbar sm:px-6">
+                                                <div className="flex items-start justify-between">
+                                                <Dialog.Title className="text-lg font-medium text-gray-900">Customer Detail</Dialog.Title>
+                                                <div className="ml-3 h-7 flex items-center">
+                                                    <button
+                                                    type="button"
+                                                    className="-m-2 p-2 text-gray-400 hover:text-gray-500"
+                                                    onClick={() => setOpen(false)}
+                                                    >
+                                                    <span className="sr-only">Close panel</span>
+                                                    <XIcon className="h-6 w-6" aria-hidden="true" />
+                                                    </button>
+                                                </div>
+                                                </div>
+                                                <form className="mt-8" id="information">
+                                                    <div className="w-full mx-auto px-3 pb-3 border-b-2 border-gray-400">
+                                                        <h3 className="w-full py-3 font-bold text-gray-700">Personal information</h3>
+                                                        <label className="text-gray-700 mx-1">Name</label>
+                                                        <input 
+                                                        type="text"
+                                                        name="name"
+                                                        autoComplete="name"
+                                                        className="w-full border-2 border-gray-400 my-1 rounded-md outline-none px-2"/>
+                                                        <label className="text-gray-700 mx-1">Email</label>
+                                                        <input 
+                                                        type="email"
+                                                        name="email"
+                                                        autoComplete="email"
+                                                        className="w-full border-2 border-gray-400 my-1 rounded-md outline-none px-2"/>
+                                                        <label className="text-gray-700 mx-1">Phone Number</label>
+                                                        <input 
+                                                        type="text"
+                                                        name="phone"
+                                                        autoComplete="phone"
+                                                        className="w-full border-2 border-gray-400 my-1 rounded-md outline-none px-2"/>
+                                                    </div>
+                                                    <div className="w-full mx-auto px-3 pb-3 border-b-2 border-gray-400">
+                                                        <h3 className="w-full py-3 font-bold text-gray-700">Dining options</h3>
+                                                        <div className="grid grid-cols-2">
+                                                            <label className="border-2 p-2 border-gray-400 mx-1 relative flex flex-col rounded-md">
+                                                                <input type="radio" className="form-radio absolute top-1 right-1" name="method" value="dine in" />
+                                                                <span className="mt-1 text-xs font-bold md:text-sm">Having Here</span>
+                                                                <span className="mt-1 text-xs text-gray-600 md:text-sm">Preparation tooks 20-30 minutes</span>
+                                                            </label>
+                                                            <label className="border-2 p-2 border-gray-400 mx-1 relative flex flex-col rounded-md">
+                                                                <input type="radio" className="form-radio absolute top-1 right-1" name="method" value="take away" />
+                                                                <span className="mt-1 text-xs font-bold md:text-sm">Take Away</span>
+                                                                <span className="mt-1 text-xs text-gray-600 md:text-sm">Extra RM2 will be charged</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div className="w-full mx-auto px-3 pb-3">
+                                                        <h3 className="w-full py-3 font-bold text-gray-700">Payment method</h3>
+                                                        <div className="grid grid-cols-2">
+                                                            <label className="border-2 p-2 border-gray-400 mx-1 relative flex justify-center items-center rounded-md">
+                                                                <input type="radio" className="form-radio absolute top-1 right-1" name="payment" value="Credit Card" />
+                                                                <CreditCard className="mx-1 w-5 h-5 sm:w-6 sm:h-6" />
+                                                                <span className="mx-1 text-xs text-gray-600 md:text-sm">Credit Card</span>
+                                                            </label>
+                                                            <label className="border-2 p-2 border-gray-400 mx-1 relative flex justify-center items-center rounded-md">
+                                                                <input type="radio" className="form-radio absolute top-1 right-1" name="payment" value="PayPal" />
+                                                                <Cash className="mx-1 w-5 h-5 sm:w-6 sm:h-6" />
+                                                                <span className="mx-1 text-xs text-gray-600 md:text-sm">PayPal</span>
+                                                            </label>
+                                                            <label className="border-2 p-2 border-gray-400 mx-1 mt-2 relative flex justify-center items-center rounded-md">
+                                                                <input type="radio" className="form-radio absolute top-1 right-1" name="payment" value="E-Transfer" />
+                                                                <CubeTransparent className="mx-1 w-5 h-5 sm:w-6 sm:h-6" />
+                                                                <span className="mx-1 text-xs text-gray-600 md:text-sm">E-Transfer</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
+                                                <div className="flex justify-between text-base font-medium text-gray-900">
+                                                <p>Subtotal</p>
+                                                <p>RM{total}</p>
+                                                </div>
+                                                <div className="flex justify-between text-base font-medium text-gray-900">
+                                                <p>Taxes 6%</p>
+                                                <p>RM{(parseFloat(total) * 0.06).toFixed(2)}</p>
+                                                </div>
+                                                <div className="flex justify-between text-base font-medium text-gray-900">
+                                                <p>Total</p>
+                                                <p>RM{(parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2)}</p>
+                                                </div>
+                                                <div className="mt-6">
+                                                <button
+                                                    onClick={e => {
+                                                        proceedToCheckout();
+                                                        setCartAction("payment");
+                                                    }}
+                                                    className="w-full px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                                                >
+                                                    Proceed To Checkout
+                                                </button>
+                                                </div>
+                                                <div className="mt-6 flex justify-center text-sm text-center text-gray-500">
+                                                <div className="flex">
+                                                    or{' '}
+                                                    <button
+                                                    onClick={e => {
+                                                        setCartAction("cart")
+                                                    }}
+                                                    type="button"
+                                                    className="text-indigo-600 font-medium flex mx-1 hover:text-indigo-500"
+                                                    >
+                                                    Back To Cart
+                                                    </button>
+                                                </div>
+                                                </div>
+                                            </div>
+                                            </>
+                                            : <>
+                                            <div className="flex-1 py-6 overflow-y-auto px-4 no-scrollbar sm:px-6">
+                                                <div className="flex items-start justify-between">
+                                                <Dialog.Title className="text-lg font-medium text-gray-900">Payment</Dialog.Title>
+                                                </div>
+                                                <div className="w-full flex flex-col justify-center items-center mt-20">
+                                                    <RingLoader size="40px" color={"#4B0082"}/>
+                                                    <div className="font-bold my-5 flex justify-center items-center">
+                                                        Payment Processing
+                                                        <PulseLoader size="10px" color={"#1A1B1B"}/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </>
+                                        }
                                         </div>
                                     </div>
                                     </Transition.Child>
@@ -376,9 +567,33 @@ function Customer() {
                                 </div>
                             </Dialog>
                             </Transition.Root>
-                            <div className="w-full flex-col">
+                            <div className="w-full flex-col relative">
                                 <img className="w-full h-60 object-cover" src={userDetail.image}/>
-                                <div className="max-w-7xl mx-auto py-2 px-4 relative sm:px-6 lg:px-8">
+                                {
+                                    cart.length > 0
+                                    ? <div className={
+                                        open ? "hidden" :"fixed z-10 top-5 right-5 p-2 rounded-full bg-white animate-bounce sm:top-10 sm:right-10"
+                                    }>
+                                        <svg 
+                                        onClick={e => {
+                                            setOpen(true)
+                                        }}
+                                        xmlns="http://www.w3.org/2000/svg" 
+                                        className="w-9 h-9 cursor-pointer text-blue-900 sm:w-12 sm:h-12" 
+                                        fill="none" 
+                                        viewBox="0 0 24 24" 
+                                        stroke="currentColor">
+                                            <path 
+                                            strokeLinecap="round" 
+                                            strokeLinejoin="round" 
+                                            strokeWidth={2} 
+                                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                        <span className="bg-blue-300 text-blue-700 text-xs absolute top-1 right-2 px-1 rounded-full lg:text-sm lg:px-2">{cart.length}</span>
+                                    </div>
+                                    : <></>
+                                }
+                                <div className="max-w-7xl mx-auto py-2 px-4 sm:px-6 lg:px-8">
                                     <div className="my-2 flex">
                                         <h2 className="font-bold text-gray-700 text-2xl">
                                             {userDetail.name}. {userDetail.cuisine} Cuisine
@@ -413,14 +628,6 @@ function Customer() {
                                             }
                                         </h4>
                                     </div>
-                                </div>
-                                <div className="absolute top-5 right-5 p-2 rounded-full bg-white sm:top-10 sm:right-10">
-                                    <ShoppingBag 
-                                    onClick={e => {
-                                        setOpen(true)
-                                    }}
-                                    className="w-9 h-9 cursor-pointer text-blue-900 sm:w-12 sm:h-12"/>
-                                    <span className="bg-blue-300 text-blue-700 absolute top-1 right-2 px-2 rounded-full">{cart.length}</span>
                                 </div>
                             </div>
                             <div className="bg-white">
@@ -467,7 +674,7 @@ function Customer() {
                                                                 </h3>
                                                                 <p className="mt-1 text-sm text-gray-500">{data.detail.food_categories}</p>
                                                                 </div>
-                                                                <p className="text-sm font-medium text-gray-900">RM {data.detail.food_price}</p>
+                                                                <p className="text-sm font-medium text-gray-900">RM{data.detail.food_price}</p>
                                                             </div>
                                                             {
                                                                 data.detail.food_available === "yes"

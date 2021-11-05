@@ -224,11 +224,11 @@ function AdminPage() {
                 image: arr[index].image,
                 name: arr[index].name
             }
-            if(arr[index].quantity <= 0){
-                arr.splice(index, 1); 
-            }
             if(arr.length !== 0){
                 calculateTotalPrice(arr[index].singlePrice, "minus")
+            }
+            if(arr[index].quantity <= 0){
+                arr.splice(index, 1); 
             }
             setCart(arr);
         }else{
