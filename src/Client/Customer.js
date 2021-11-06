@@ -21,6 +21,10 @@ function Customer() {
     const [total, setTotal] = useState(0);
 
     const [cartAction, setCartAction] = useState("cart");
+    const [cartType, setCartType] = useState("");
+
+    const [restaurantId, setRestaurantId] = useState('');
+    const [restaurantTable, setRestaurantTable] = useState("");
     
     useEffect( () => {
         const queryString = window.location.search;
@@ -33,8 +37,12 @@ function Customer() {
             })
             .then( (res) => {
                 if(res.data.data.success){
+                    setRestaurantId(id);
+                    if(urlParams.get('table_no') !== null){
+                        setRestaurantTable(urlParams.get('table_no'));
+                    }
                     var data = res.data.data.data;
-                    filteringCategories(data)
+                    filteringCategories(data);
                     setLoading(false);
                 }else{
                     setSuccess(false);
@@ -191,17 +199,65 @@ function Customer() {
         setTotal((parseFloat(total) + parseFloat(price)).toFixed(2))
     }
     // proceed to checkout function
-    function proceedToCheckout(){
+    function proceedToCheckout(type){
         var name = document.getElementById("information").elements['name'].value;
         var email = document.getElementById("information").elements['email'].value;
         var phone = document.getElementById("information").elements['phone'].value;
-        var type = document.getElementById("information").elements['method'].value;
         var method = document.getElementById("information").elements['payment'].value;
         
-        if(infoValidation(name) && infoValidation(email) && infoValidation(phone) && infoValidation(type) && infoValidation(method)){
+        if(infoValidation(name) && infoValidation(email) && infoValidation(phone) && infoValidation(method)){
             if(emailValidation(email)){
                 if(phoneNumberValidation(phone)){
-                    console.log(name, email)
+                    if(type === "dine in"){
+                        var table = document.getElementById("information").elements['table'].value;
+                        if(infoValidation(table)){
+                            var food = updateNewCart(cart);
+                            var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
+                            
+                            Axios.post('http://localhost:4000/dineInFromRestaurant', {
+                                id: restaurantId,
+                                orderId: uniqueId(),
+                                food: JSON.stringify({food: food}),
+                                amount: newTotal.toString(),
+                                customer: name,
+                                phone: phone,
+                                email: email,
+                                type: "dine in",
+                                status: "pending",
+                                method: method,
+                                table_no: table
+                            })
+                            .then((res) => {
+                                toast.success(res.data.data, {
+                                    position: toast.POSITION.TOP_RIGHT,
+                                    autoClose: 3000
+                                });
+                                setCartAction("payment");
+                            })
+                        }
+                    }else{
+                        var food = updateNewCart(cart);
+                        var newTotal = ((parseFloat(total) + (parseFloat(total) * 0.06)) + 2).toFixed(2);
+                        Axios.post('http://localhost:4000/takeAwayFromRestaurant', {
+                            id: restaurantId,
+                            orderId: uniqueId(),
+                            food: JSON.stringify({food: food}),
+                            amount: newTotal.toString(),
+                            customer: name,
+                            phone: phone,
+                            email: email,
+                            type: "take away",
+                            status: "pending",
+                            method: method,
+                        })
+                        .then((res) => {
+                            toast.success(res.data.data, {
+                                position: toast.POSITION.TOP_RIGHT,
+                                autoClose: 3000
+                            });
+                            setCartAction("payment");
+                        })
+                    }
                 }
             }
         }
@@ -239,6 +295,30 @@ function Customer() {
             autoClose: 3000
         });
         return false;
+    }
+
+    // personal used function
+    function updateNewCart(cart){
+        var newCart = [];
+        for(var i = 0; i < cart.length; i++){
+            var data = {
+                id: cart[i].id,
+                quantity: cart[i].quantity,
+                price: cart[i].price
+            }
+            newCart.push(data);
+        }
+        return newCart;
+    }
+    function uniqueId () {
+        var idStrLen = 32;
+        var idStr = (Math.floor((Math.random() * 25)) + 10).toString(36) + "_";
+        idStr += (new Date()).getTime().toString(36) + "_";
+        do {
+            idStr += (Math.floor((Math.random() * 35))).toString(36);
+        } while (idStr.length < idStrLen);
+    
+        return (idStr);
     }
 
     return (
@@ -409,7 +489,14 @@ function Customer() {
                                                 <div className="mt-6">
                                                 <button
                                                 onClick={e => {
-                                                    setCartAction("info")
+                                                    if(cart.length > 0){
+                                                        setCartAction("info")
+                                                    }else{
+                                                        toast.info("Insert minimum one food before checking out", {
+                                                            position: toast.POSITION.TOP_RIGHT,
+                                                            autoClose: 3000
+                                                        });
+                                                    }
                                                 }}
                                                     className="w-full px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
                                                 >
@@ -470,34 +557,63 @@ function Customer() {
                                                     </div>
                                                     <div className="w-full mx-auto px-3 pb-3 border-b-2 border-gray-400">
                                                         <h3 className="w-full py-3 font-bold text-gray-700">Dining options</h3>
-                                                        <div className="grid grid-cols-2">
+                                                        <div className="grid grid-cols-2 pb-2">
                                                             <label className="border-2 p-2 border-gray-400 mx-1 relative flex flex-col rounded-md">
-                                                                <input type="radio" className="form-radio absolute top-1 right-1" name="method" value="dine in" />
+                                                                <input 
+                                                                onChange={e => {
+                                                                    setCartType('dine in')
+                                                                }}
+                                                                name="type"
+                                                                type="radio" 
+                                                                className="form-radio absolute top-1 right-1 w-2 h-2 sm:w-3 sm:h-3" />
                                                                 <span className="mt-1 text-xs font-bold md:text-sm">Having Here</span>
                                                                 <span className="mt-1 text-xs text-gray-600 md:text-sm">Preparation tooks 20-30 minutes</span>
                                                             </label>
                                                             <label className="border-2 p-2 border-gray-400 mx-1 relative flex flex-col rounded-md">
-                                                                <input type="radio" className="form-radio absolute top-1 right-1" name="method" value="take away" />
+                                                                <input 
+                                                                onChange={e => {
+                                                                    setCartType('take away');
+                                                                }}
+                                                                name="type"
+                                                                type="radio" 
+                                                                className="form-radio absolute top-1 right-1 w-2 h-2 sm:w-3 sm:h-3" />
                                                                 <span className="mt-1 text-xs font-bold md:text-sm">Take Away</span>
                                                                 <span className="mt-1 text-xs text-gray-600 md:text-sm">Extra RM2 will be charged</span>
                                                             </label>
+                                                        </div>
+                                                        <div className={
+                                                            cartType === "dine in"
+                                                            ? "visible"
+                                                            : "hidden"
+                                                        }>
+                                                            <label className="text-gray-700 mx-1">Table No</label>
+                                                            <input 
+                                                            type="text"
+                                                            name="table"
+                                                            autoComplete="no"
+                                                            defaultValue={
+                                                                restaurantTable !== ""
+                                                                ? restaurantTable
+                                                                : ""
+                                                            }
+                                                            className="w-full border-2 border-gray-400 my-1 rounded-md outline-none px-2"/>
                                                         </div>
                                                     </div>
                                                     <div className="w-full mx-auto px-3 pb-3">
                                                         <h3 className="w-full py-3 font-bold text-gray-700">Payment method</h3>
                                                         <div className="grid grid-cols-2">
                                                             <label className="border-2 p-2 border-gray-400 mx-1 relative flex justify-center items-center rounded-md">
-                                                                <input type="radio" className="form-radio absolute top-1 right-1" name="payment" value="Credit Card" />
+                                                                <input type="radio" className="form-radio absolute top-1 right-1 w-2 h-2 sm:w-3 sm:h-3" name="payment" value="Credit Card" />
                                                                 <CreditCard className="mx-1 w-5 h-5 sm:w-6 sm:h-6" />
                                                                 <span className="mx-1 text-xs text-gray-600 md:text-sm">Credit Card</span>
                                                             </label>
                                                             <label className="border-2 p-2 border-gray-400 mx-1 relative flex justify-center items-center rounded-md">
-                                                                <input type="radio" className="form-radio absolute top-1 right-1" name="payment" value="PayPal" />
+                                                                <input type="radio" className="form-radio absolute top-1 right-1 w-2 h-2 sm:w-3 sm:h-3" name="payment" value="PayPal" />
                                                                 <Cash className="mx-1 w-5 h-5 sm:w-6 sm:h-6" />
                                                                 <span className="mx-1 text-xs text-gray-600 md:text-sm">PayPal</span>
                                                             </label>
                                                             <label className="border-2 p-2 border-gray-400 mx-1 mt-2 relative flex justify-center items-center rounded-md">
-                                                                <input type="radio" className="form-radio absolute top-1 right-1" name="payment" value="E-Transfer" />
+                                                                <input type="radio" className="form-radio absolute top-1 right-1 w-2 h-2 sm:w-3 sm:h-3" name="payment" value="E-Transfer" />
                                                                 <CubeTransparent className="mx-1 w-5 h-5 sm:w-6 sm:h-6" />
                                                                 <span className="mx-1 text-xs text-gray-600 md:text-sm">E-Transfer</span>
                                                             </label>
@@ -514,15 +630,26 @@ function Customer() {
                                                 <p>Taxes 6%</p>
                                                 <p>RM{(parseFloat(total) * 0.06).toFixed(2)}</p>
                                                 </div>
+                                                {
+                                                    cartType === "take away"
+                                                    ? <div className="flex justify-between text-base font-medium text-gray-900">
+                                                        <p>Container Fees</p>
+                                                        <p>RM2.00</p>
+                                                    </div>
+                                                    : <></>
+                                                }
                                                 <div className="flex justify-between text-base font-medium text-gray-900">
                                                 <p>Total</p>
-                                                <p>RM{(parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2)}</p>
+                                                {
+                                                    cartType === "take away"
+                                                    ? <p>RM{((parseFloat(total) + (parseFloat(total) * 0.06)) + 2).toFixed(2)}</p>
+                                                    : <p>RM{(parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2)}</p>
+                                                }
                                                 </div>
                                                 <div className="mt-6">
                                                 <button
                                                     onClick={e => {
-                                                        proceedToCheckout();
-                                                        setCartAction("payment");
+                                                        proceedToCheckout(cartType)
                                                     }}
                                                     className="w-full px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
                                                 >
