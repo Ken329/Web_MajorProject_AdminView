@@ -7,6 +7,7 @@ import { Cash, CreditCard, CubeTransparent, CurrencyDollar, MinusCircle, PlusCir
 import { Dialog, Transition } from '@headlessui/react'
 import { TrashIcon, XIcon } from '@heroicons/react/outline'
 import '../pages/scrollbar.css'
+import CustomerFooter from '../components/CustomerFooter';
 
 function Customer() {
     const [loading, setLoading] = useState(true);
@@ -213,8 +214,8 @@ function Customer() {
                         if(infoValidation(table)){
                             var food = updateNewCart(cart);
                             var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
-                            
-                            Axios.post('http://localhost:4000/dineInFromRestaurant', {
+                            setCartAction("payment");
+                            Axios.post('https://eatsy-0329.herokuapp.com/dineInFromRestaurant', {
                                 id: restaurantId,
                                 orderId: uniqueId(),
                                 food: JSON.stringify({food: food}),
@@ -232,13 +233,13 @@ function Customer() {
                                     position: toast.POSITION.TOP_RIGHT,
                                     autoClose: 3000
                                 });
-                                setCartAction("payment");
                             })
                         }
                     }else{
                         var food = updateNewCart(cart);
                         var newTotal = ((parseFloat(total) + (parseFloat(total) * 0.06)) + 2).toFixed(2);
-                        Axios.post('http://localhost:4000/takeAwayFromRestaurant', {
+                        setCartAction("payment");
+                        Axios.post('https://eatsy-0329.herokuapp.com/takeAwayFromRestaurant', {
                             id: restaurantId,
                             orderId: uniqueId(),
                             food: JSON.stringify({food: food}),
@@ -255,7 +256,6 @@ function Customer() {
                                 position: toast.POSITION.TOP_RIGHT,
                                 autoClose: 3000
                             });
-                            setCartAction("payment");
                         })
                     }
                 }
@@ -338,7 +338,8 @@ function Customer() {
                             <h1 className="text-red-500 font-bold text-center py-4 text-lg">Please contect the restaurant to
                             to fix this issue, sorry for the error.</h1>
                         </div>
-                        : <main className="flex-col relative w-full bg-gray-100 overflow-hidden overflow-y-auto">
+                        : <> 
+                        <main className="flex-col relative w-full min-h-screen bg-gray-100 overflow-hidden overflow-y-auto">
                             <Transition.Root show={open} as={Fragment}>
                             <Dialog as="div" className="fixed inset-0 overflow-hidden" onClose={setOpen}>
                                 <div className="absolute inset-0 overflow-hidden">
@@ -822,6 +823,8 @@ function Customer() {
                                 </div>
                             </div>
                         </main>
+                        <CustomerFooter />
+                        </>
                     }
                     </>
                 )
