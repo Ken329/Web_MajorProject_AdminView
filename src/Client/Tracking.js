@@ -42,36 +42,36 @@ function TracksOrder() {
         }
     }, [] ) 
 
-    // useEffect( () => {
-    //     const interval = setInterval(() => {
-    //         const queryString = window.location.search;
-    //         const urlParams = new URLSearchParams(queryString);
-    //         const orderId = urlParams.get('order_id');
-    //         const id = urlParams.get('res_id');
+    useEffect( () => {
+        const interval = setInterval(() => {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const orderId = urlParams.get('order_id');
+            const id = urlParams.get('res_id');
             
-    //         if(id !== undefined && id !== "" && id !== null && orderId !== undefined && orderId !== "" && orderId !== null){
-    //             Axios.post("https://eatsy-0329.herokuapp.com/trackOrderWithOrderId", {
-    //                 id: id,
-    //                 orderId: orderId
-    //             })
-    //             .then( (res) => {
-    //                 if(res.data.data.length !== 0){
-    //                     const data = res.data.data[0];
-    //                     setOrderDetail(data);
-    //                     setSuccess(true)
-    //                 }else{
-    //                     setSuccess(false);
-    //                     setLoading(false);
-    //                 }
-    //             })
-    //         }else{
-    //             setSuccess(false);
-    //             setLoading(false);
-    //         }
-    //     }, 3000);
+            if(id !== undefined && id !== "" && id !== null && orderId !== undefined && orderId !== "" && orderId !== null){
+                Axios.post("https://eatsy-0329.herokuapp.com/trackOrderWithOrderId", {
+                    id: id,
+                    orderId: orderId
+                })
+                .then( (res) => {
+                    if(res.data.data.length !== 0){
+                        const data = res.data.data[0];
+                        setOrderDetail(data);
+                        setSuccess(true)
+                    }else{
+                        setSuccess(false);
+                        setLoading(false);
+                    }
+                })
+            }else{
+                setSuccess(false);
+                setLoading(false);
+            }
+        }, 3000);
 
-    //     return () => clearInterval(interval);
-    // }, [] )
+        return () => clearInterval(interval);
+    }, [] )
 
     function getOrderFood(food, id){
         const myFood = JSON.parse(food);
@@ -134,7 +134,7 @@ function TracksOrder() {
                                             <div className="w-1/5 bg-blue-300 rounded-l-lg"></div>
                                             <div className="w-4/5 bg-gray-300 rounded-r-lg"></div>
                                         </>
-                                        : orderDetail.order_status === "approved"
+                                        : orderDetail.order_status === "approve"
                                         ? <>
                                             <div className="w-2/5 bg-blue-300 rounded-l-lg"></div>
                                             <div className="w-3/5 bg-gray-300 rounded-r-lg"></div>
@@ -150,7 +150,7 @@ function TracksOrder() {
                                             <div className="w-1/5 bg-gray-300 rounded-r-lg"></div>
                                         </>
                                         : <>
-                                            <div className="w-full bg-blue-300 rounded-l-lg"></div>
+                                            <div className="w-full bg-blue-300 rounded-lg"></div>
                                             <div className="w-0 bg-gray-300 rounded-r-lg"></div>
                                         </>
                                     }
@@ -162,7 +162,7 @@ function TracksOrder() {
                                         : "my-2 text-center text-xs md:text-sm lg:text-base"
                                     }>Pending</p>
                                     <p className={
-                                        orderDetail.order_status === "approved"
+                                        orderDetail.order_status === "approve"
                                         ? "my-2 text-center font-bold text-blue-600 text-xs md:text-sm lg:text-base"
                                         : "my-2 text-center text-xs md:text-sm lg:text-base"
                                     }>Approved</p>

@@ -58,7 +58,8 @@ function HistoryPage() {
         })
         .then((res) => {
             if(res.data.success){
-                setUserOrder([])
+                setUserOrder([]);
+                setAllOrderNumber([]);
                 const data = res.data.data;
                 var count = 0;
                 for(var i = data.length - 1; i >= 0; i--){
@@ -80,6 +81,7 @@ function HistoryPage() {
         .then((res) => {
             if(res.data.success){
                 setUserTable([]);
+                setAllTableNumber([]);
                 const data = res.data.data;
                 var count = 0;
                 for(var i = data.length - 1; i >= 0; i--){

@@ -3,13 +3,16 @@ import Axios from 'axios'
 import { ClimbingBoxLoader, PulseLoader, RingLoader } from 'react-spinners';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Cash, CreditCard, CubeTransparent, CurrencyDollar, MinusCircle, PlusCircle, ShoppingBag, Speakerphone } from 'heroicons-react';
+import { Cash, CreditCard, CubeTransparent, CurrencyDollar, MinusCircle, PlusCircle, ShoppingBag, Speakerphone, Table } from 'heroicons-react';
 import { Dialog, Transition } from '@headlessui/react'
 import { TrashIcon, XIcon } from '@heroicons/react/outline'
 import '../pages/scrollbar.css'
 import CustomerFooter from '../components/CustomerFooter';
+import { useHistory } from 'react-router-dom';
 
 function Customer() {
+    let history = useHistory();
+
     const [loading, setLoading] = useState(true);
 
     const [userDetail, setUserDetail] = useState([]);
@@ -214,10 +217,11 @@ function Customer() {
                         if(infoValidation(table)){
                             var food = updateNewCart(cart);
                             var newTotal = (parseFloat(total) + (parseFloat(total) * 0.06)).toFixed(2);
+                            var orderId = uniqueId(32);
                             setCartAction("payment");
                             Axios.post('https://eatsy-0329.herokuapp.com/dineInFromRestaurant', {
                                 id: restaurantId,
-                                orderId: uniqueId(),
+                                orderId: orderId,
                                 food: JSON.stringify({food: food}),
                                 amount: newTotal.toString(),
                                 customer: name,
@@ -229,19 +233,23 @@ function Customer() {
                                 table_no: table
                             })
                             .then((res) => {
+                                setTimeout(() => {
+                                    history.push(`/Client/Tracking?res_id=${restaurantId}&order_id=${orderId}`)
+                                }, 3000)
                                 toast.success(res.data.data, {
                                     position: toast.POSITION.TOP_RIGHT,
                                     autoClose: 3000
-                                });
+                                })
                             })
                         }
                     }else{
                         var food = updateNewCart(cart);
                         var newTotal = ((parseFloat(total) + (parseFloat(total) * 0.06)) + 2).toFixed(2);
+                        var orderId = uniqueId(32);
                         setCartAction("payment");
                         Axios.post('https://eatsy-0329.herokuapp.com/takeAwayFromRestaurant', {
                             id: restaurantId,
-                            orderId: uniqueId(),
+                            orderId: orderId,
                             food: JSON.stringify({food: food}),
                             amount: newTotal.toString(),
                             customer: name,
@@ -252,12 +260,49 @@ function Customer() {
                             method: method,
                         })
                         .then((res) => {
+                            setTimeout(() => {
+                                history.push(`/Client/Tracking?res_id=${restaurantId}&order_id=${orderId}`)
+                            }, 3000)
                             toast.success(res.data.data, {
                                 position: toast.POSITION.TOP_RIGHT,
                                 autoClose: 3000
-                            });
+                            })
                         })
                     }
+                }
+            }
+        }
+    }
+    function bookTable(){
+        var name = document.getElementById("table").elements['name'].value;
+        var email = document.getElementById("table").elements['email'].value;
+        var phone = document.getElementById("table").elements['phone'].value;
+        var pax = document.getElementById("table").elements['pax'].value;
+        var date = document.getElementById("table").elements['date'].value;
+
+        if(infoValidation(name) && infoValidation(email) && infoValidation(phone) && infoValidation(pax) && infoValidation(date)){
+            if(emailValidation(email)){
+                if(phoneNumberValidation(phone)){
+                    var tableId = uniqueId(20);
+                    Axios.post("https://eatsy-0329.herokuapp.com/insertNewTable", {
+                        id: restaurantId,
+                        tableId: tableId,
+                        name: name,
+                        phone: phone,
+                        pax: pax,
+                        status: "pending",
+                        date: date,
+                        email: email
+                    })
+                    .then((res) => {
+                        setTimeout(() => {
+                            setOpen(false)
+                        }, 3000)
+                        toast.success(res.data.data, {
+                            position: toast.POSITION.TOP_RIGHT,
+                            autoClose: 3000
+                        })
+                    })
                 }
             }
         }
@@ -310,8 +355,7 @@ function Customer() {
         }
         return newCart;
     }
-    function uniqueId () {
-        var idStrLen = 32;
+    function uniqueId (idStrLen) {
         var idStr = (Math.floor((Math.random() * 25)) + 10).toString(36) + "_";
         idStr += (new Date()).getTime().toString(36) + "_";
         do {
@@ -366,47 +410,51 @@ function Customer() {
                                     >
                                     <div className="w-screen max-w-md">
                                         <div className="h-full flex flex-col bg-white shadow-xl overflow-y-scroll">
-                                        <div className="flex w-full justify-center items-center py-3 border-b border-gray-200">
-                                            <p className={
-                                                cartAction === "cart"
-                                                ? "text-xs text-indigo-700 md:text-sm lg:text-base"
-                                                : "text-xs cursor-pointer md:text-sm lg:text-base"
-                                            }>
-                                                Cart
-                                            </p>
-                                            <svg xmlns="http://www.w3.org/2000/svg" 
-                                            className="h-5 w-5 mx-2 md:mx-3" 
-                                            viewBox="0 0 20 20" 
-                                            fill="currentColor">
-                                                <path 
-                                                fillRule="evenodd" 
-                                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" 
-                                                clipRule="evenodd" />
-                                            </svg>
-                                            <p className={
-                                                cartAction === "info"
-                                                ? "text-xs text-indigo-700 md:text-sm lg:text-base"
-                                                : "text-xs cursor-pointer md:text-sm lg:text-base"
-                                            }>
-                                                Personal Information
-                                            </p>
-                                            <svg xmlns="http://www.w3.org/2000/svg" 
-                                            className="h-5 w-5 mx-2 md:mx-3" 
-                                            viewBox="0 0 20 20" 
-                                            fill="currentColor">
-                                                <path 
-                                                fillRule="evenodd" 
-                                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" 
-                                                clipRule="evenodd" />
-                                            </svg>
-                                            <p className={
-                                                cartAction === "payment"
-                                                ? "text-xs text-indigo-700 md:text-sm lg:text-base"
-                                                : "text-xs cursor-pointer md:text-sm lg:text-base"
-                                            }>
-                                                Payment
-                                            </p>
-                                        </div>
+                                        {
+                                            cartAction !== "table"
+                                            ? <div className="flex w-full justify-center items-center py-3 border-b border-gray-200">
+                                                <p className={
+                                                    cartAction === "cart"
+                                                    ? "text-xs text-indigo-700 md:text-sm lg:text-base"
+                                                    : "text-xs cursor-pointer md:text-sm lg:text-base"
+                                                }>
+                                                    Cart
+                                                </p>
+                                                <svg xmlns="http://www.w3.org/2000/svg" 
+                                                className="h-5 w-5 mx-2 md:mx-3" 
+                                                viewBox="0 0 20 20" 
+                                                fill="currentColor">
+                                                    <path 
+                                                    fillRule="evenodd" 
+                                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" 
+                                                    clipRule="evenodd" />
+                                                </svg>
+                                                <p className={
+                                                    cartAction === "info"
+                                                    ? "text-xs text-indigo-700 md:text-sm lg:text-base"
+                                                    : "text-xs cursor-pointer md:text-sm lg:text-base"
+                                                }>
+                                                    Personal Information
+                                                </p>
+                                                <svg xmlns="http://www.w3.org/2000/svg" 
+                                                className="h-5 w-5 mx-2 md:mx-3" 
+                                                viewBox="0 0 20 20" 
+                                                fill="currentColor">
+                                                    <path 
+                                                    fillRule="evenodd" 
+                                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" 
+                                                    clipRule="evenodd" />
+                                                </svg>
+                                                <p className={
+                                                    cartAction === "payment"
+                                                    ? "text-xs text-indigo-700 md:text-sm lg:text-base"
+                                                    : "text-xs cursor-pointer md:text-sm lg:text-base"
+                                                }>
+                                                    Payment
+                                                </p>
+                                            </div>
+                                            : <></>
+                                        }
                                         {
                                             cartAction === "cart"
                                             ? <>
@@ -673,6 +721,98 @@ function Customer() {
                                                 </div>
                                             </div>
                                             </>
+                                            : cartAction === "table"
+                                            ? <>
+                                                <div className="flex-1 py-6 overflow-y-auto px-4 no-scrollbar sm:px-6">
+                                                <div className="flex items-start justify-between">
+                                                <Dialog.Title className="text-lg font-medium text-gray-900">Book your table</Dialog.Title>
+                                                <div className="ml-3 h-7 flex items-center">
+                                                    <button
+                                                    type="button"
+                                                    className="-m-2 p-2 text-gray-400 hover:text-gray-500"
+                                                    onClick={() => setOpen(false)}
+                                                    >
+                                                    <span className="sr-only">Close panel</span>
+                                                    <XIcon className="h-6 w-6" aria-hidden="true" />
+                                                    </button>
+                                                </div>
+                                                </div>
+                                                <form className="mt-8" id="table">
+                                                    <div className="w-full mx-auto px-3 pb-3">
+                                                        <h3 className="w-full py-3 font-bold text-gray-700">Personal information</h3>
+                                                        <label className="text-gray-700 mx-1">Name</label>
+                                                        <input 
+                                                        type="text"
+                                                        name="name"
+                                                        autoComplete="name"
+                                                        className="w-full border-2 border-gray-400 my-2 rounded-md outline-none px-2"/>
+                                                        <label className="text-gray-700 mx-1">Email</label>
+                                                        <input 
+                                                        type="email"
+                                                        name="email"
+                                                        autoComplete="email"
+                                                        className="w-full border-2 border-gray-400 my-2 rounded-md outline-none px-2"/>
+                                                        <label className="text-gray-700 mx-1">Phone Number</label>
+                                                        <input 
+                                                        type="text"
+                                                        name="phone"
+                                                        autoComplete="phone"
+                                                        className="w-full border-2 border-gray-400 my-2 rounded-md outline-none px-2"/>
+                                                        <label className="text-gray-700 mx-1">Number of Pax</label>
+                                                        <select
+                                                        type="text"
+                                                        name="pax"
+                                                        autoComplete="pax"
+                                                        defaultValue=""
+                                                        className="w-full border-2 border-gray-400 my-2 rounded-md outline-none px-2">
+                                                            <option value="" disabled={true}>Select one option below</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                            <option value="4">4</option>
+                                                            <option value="5">5</option>
+                                                            <option value="6">6</option>
+                                                            <option value="7">7</option>
+                                                            <option value="8">8</option>
+                                                            <option value="9">9</option>
+                                                            <option value="10">10</option>
+                                                        </select>
+                                                        <label className="text-gray-700 mx-1">Date and Time</label>
+                                                        <input 
+                                                        type="text"
+                                                        name="date"
+                                                        autoComplete="date"
+                                                        type="datetime-local"
+                                                        className="w-full border-2 border-gray-400 my-2 rounded-md outline-none px-2"/>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
+                                                <div className="mt-6">
+                                                <button
+                                                    onClick={e => {
+                                                        bookTable()
+                                                    }}
+                                                    className="w-full px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+                                                >
+                                                    Book Table
+                                                </button>
+                                                </div>
+                                                <div className="mt-6 flex justify-center text-sm text-center text-gray-500">
+                                                <div className="flex">
+                                                    or{' '}
+                                                    <button
+                                                    onClick={e => {
+                                                        setOpen(false)
+                                                    }}
+                                                    type="button"
+                                                    className="text-indigo-600 font-medium flex mx-1 hover:text-indigo-500"
+                                                    >
+                                                    Continue Shopping
+                                                    </button>
+                                                </div>
+                                                </div>
+                                            </div>
+                                            </>
                                             : <>
                                             <div className="flex-1 py-6 overflow-y-auto px-4 no-scrollbar sm:px-6">
                                                 <div className="flex items-start justify-between">
@@ -682,7 +822,6 @@ function Customer() {
                                                     <RingLoader size="40px" color={"#4B0082"}/>
                                                     <div className="font-bold my-5 flex justify-center items-center">
                                                         Payment Processing
-                                                        <PulseLoader size="10px" color={"#1A1B1B"}/>
                                                     </div>
                                                 </div>
                                             </div>
@@ -704,7 +843,8 @@ function Customer() {
                                     }>
                                         <svg 
                                         onClick={e => {
-                                            setOpen(true)
+                                            setOpen(true);
+                                            setCartAction("cart");
                                         }}
                                         xmlns="http://www.w3.org/2000/svg" 
                                         className="w-9 h-9 cursor-pointer text-blue-900 sm:w-12 sm:h-12" 
@@ -721,6 +861,14 @@ function Customer() {
                                     </div>
                                     : <></>
                                 }
+                                <div className="top-5 absolute left-5 p-2 rounded-full bg-white sm:top-10 sm:left-10">
+                                    <Table 
+                                    onClick={e => {
+                                        setOpen(true);
+                                        setCartAction("table");
+                                    }}
+                                    className="w-9 h-9 cursor-pointer text-blue-900 sm:w-12 sm:h-12"/>
+                                </div>
                                 <div className="max-w-7xl mx-auto py-2 px-4 sm:px-6 lg:px-8">
                                     <div className="my-2 flex">
                                         <h2 className="font-bold text-gray-700 text-2xl">
@@ -729,7 +877,7 @@ function Customer() {
                                     </div>
                                     <div className="my-2 flex">
                                         <CurrencyDollar className={
-                                            userDetail.range > 0
+                                             userDetail.range > 0
                                             ? "w-5 h-5 text-yellow-500"
                                             : "w-5 h-5"
                                         }/>

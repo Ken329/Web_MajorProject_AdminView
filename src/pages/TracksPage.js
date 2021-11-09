@@ -61,6 +61,7 @@ function TracksPage() {
         .then((res) => {
             if(res.data.success){
                 setUserOrder([]);
+                setAllOrderNumber([]);
                 const data = res.data.data;
                 var count = 0;
                 for(var i = data.length - 1; i >= 0; i--){
@@ -82,7 +83,9 @@ function TracksPage() {
         .then((res) => {
             if(res.data.success){
                 const data = res.data.data;
+                console.log(data)
                 setUserTable([]);
+                setAllTableNumber([]);
                 var count = 0;
                 for(var i = data.length - 1; i >= 0; i--){
                     setUserTable(array => [...array, data[i]]);
