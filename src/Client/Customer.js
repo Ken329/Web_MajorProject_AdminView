@@ -764,7 +764,7 @@ function Customer() {
                                                         name="pax"
                                                         autoComplete="pax"
                                                         defaultValue=""
-                                                        className="w-full border-2 border-gray-400 my-2 rounded-md outline-none px-2">
+                                                        className="w-full border-2 border-gray-600 my-2 rounded-md outline-none px-2">
                                                             <option value="" disabled={true}>Select one option below</option>
                                                             <option value="2">2</option>
                                                             <option value="3">3</option>
@@ -782,7 +782,7 @@ function Customer() {
                                                         name="date"
                                                         autoComplete="date"
                                                         type="datetime-local"
-                                                        className="w-full border-2 border-gray-400 my-2 rounded-md outline-none px-2"/>
+                                                        className="w-full border-2 border-gray-600 my-2 rounded-md outline-none px-2"/>
                                                     </div>
                                                 </form>
                                             </div>
