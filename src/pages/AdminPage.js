@@ -160,14 +160,14 @@ function AdminPage() {
                 myBtn.style.backgroundColor = "#fff";
             }
         }
-        var allCon = document.getElementsByClassName("bg-white h-72 flex-col rounded-lg relative m-5");
+        var allCon = document.getElementsByClassName("bg-white w-44 my-3 h-72 flex-col rounded-lg relative");
         if(categories === "All"){
             for(var myCon of allCon){
-                myCon.style.display = "flex"
+                myCon.style.display = "flex";
             }
         }else{
             for(var myCon of allCon){
-                myCon.style.display = "none"
+                myCon.style.display = "none";
             }
             var con = document.getElementsByClassName("categories_"+categories);
             for(var myCon of con){
