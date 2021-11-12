@@ -105,11 +105,17 @@ function TransactionPage() {
         .then((res) => {
             var foodData = res.data.data;
             var result = [];
+            var count = 0;
             for(var i = foodData.length - 1; i >= 0; i--){
-                if(result.length < 9){
-                    for(var j = 0; j < foodData[i].data.length; j++){
-                        result.push(foodData[i].data[j]);
+                for(var j = 0; j < foodData[i].data.length; j++){
+                    count++;
+                    if(count > 10){
+                        break;
                     }
+                    result.push(foodData[i].data[j]);
+                }
+                if(count > 10){
+                    break;
                 }
             }
             setAllOrder(result);
