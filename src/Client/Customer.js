@@ -235,10 +235,10 @@ function Customer() {
                             .then((res) => {
                                 setTimeout(() => {
                                     history.push(`/Client/Tracking?res_id=${restaurantId}&order_id=${orderId}`)
-                                }, 3000)
+                                }, 2000)
                                 toast.success(res.data.data, {
                                     position: toast.POSITION.TOP_RIGHT,
-                                    autoClose: 3000
+                                    autoClose: 2000
                                 })
                             })
                         }
@@ -262,10 +262,10 @@ function Customer() {
                         .then((res) => {
                             setTimeout(() => {
                                 history.push(`/Client/Tracking?res_id=${restaurantId}&order_id=${orderId}`)
-                            }, 3000)
+                            }, 2000)
                             toast.success(res.data.data, {
                                 position: toast.POSITION.TOP_RIGHT,
-                                autoClose: 3000
+                                autoClose: 2000
                             })
                         })
                     }
@@ -297,10 +297,10 @@ function Customer() {
                     .then((res) => {
                         setTimeout(() => {
                             setOpen(false)
-                        }, 3000)
+                        }, 2000)
                         toast.success(res.data.data, {
                             position: toast.POSITION.TOP_RIGHT,
-                            autoClose: 3000
+                            autoClose: 2000
                         })
                     })
                 }
