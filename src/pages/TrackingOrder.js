@@ -114,12 +114,12 @@ function TracksOrder() {
                             {
                                 orderMenu.map((data, index) => {
                                     return <div key={index} className="w-full h-28 flex rounded-lg bg-white my-3">
-                                                <img className="h-full w-3/12 rounded-l-lg" src={data.food_image}/>
+                                                <img className="h-full w-3/12 rounded-l-lg" src={data.data.food_image}/>
                                                 <div className="flex-col w-9/12">
-                                                    <h5 className="w-full h-2/4 text-center pt-2">{data.food_name}</h5>
+                                                    <h5 className="w-full h-2/4 text-center pt-2">{data.data.food_name}</h5>
                                                     <div className="flex pl-3 w-full">
-                                                        <p className="w-6/12 text-center">Quantity: {orderMenuDetail[index].quantity}</p>
-                                                        <p className="w-6/12 text-center">RM {orderMenuDetail[index].price}</p>
+                                                        <p className="w-6/12 text-center">Quantity: {orderMenuDetail[data.index].quantity}</p>
+                                                        <p className="w-6/12 text-center">RM {orderMenuDetail[data.index].price}</p>
                                                     </div>
                                                 </div>
                                             </div>

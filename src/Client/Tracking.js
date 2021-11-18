@@ -191,18 +191,18 @@ function TracksOrder() {
                                                 className="flex mx-5 my-3 bg-white rounded-md p-2 items-center">
                                                 <div className="flex-shrink-0 w-24 h-24 border border-gray-200 rounded-md overflow-hidden">
                                                     <img
-                                                    src={data.food_image}
-                                                    alt={data.food_name}
+                                                    src={data.data.food_image}
+                                                    alt={data.data.food_name}
                                                     className="w-full h-full object-center object-cover"
                                                     />
                                                 </div>
                                                 <div className="mx-4 flex-1 flex flex-col">
                                                     <div className="flex justify-between text-xs md:text-sm lg:text-base font-medium text-gray-900">
-                                                        <h3>{data.food_name}</h3>
-                                                        <p className="ml-4">RM{orderMenuDetail[index].price}</p>
+                                                        <h3>{data.data.food_name}</h3>
+                                                        <p className="ml-4">RM{orderMenuDetail[data.index].price}</p>
                                                     </div>
-                                                    <p className="mt-1 text-xs md:text-sm text-gray-500">{data.food_categories}</p>
-                                                    <p className="mt-1 text-xs md:text-sm text-gray-500">Qty {orderMenuDetail[index].quantity}</p>       
+                                                    <p className="mt-1 text-xs md:text-sm text-gray-500">{data.data.food_categories}</p>
+                                                    <p className="mt-1 text-xs md:text-sm text-gray-500">Qty {orderMenuDetail[data.index].quantity}</p>       
                                                 </div>
                                             </div>
                                     })
